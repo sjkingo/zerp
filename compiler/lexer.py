@@ -3,10 +3,10 @@ from __future__ import print_function
 import ply.lex as lex
 
 reserved = {
-    'begin': 'BEGIN',
-    'end': 'END',
-    'var': 'VAR_DECL',
-    'print': 'PRINT_STMT',
+    'begin': 'KW_BEGIN',
+    'end': 'KW_END',
+    'var': 'KW_VAR',
+    'print': 'KW_PRINT',
 }
 
 tokens = [

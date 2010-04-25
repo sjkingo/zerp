@@ -30,12 +30,12 @@ def p_empty(p):
     pass
 
 def p_function(p):
-    'Function : BEGIN StatementList END'
+    'Function : KW_BEGIN StatementList KW_END'
     p[0] = FunctionNode(p[2])
     print_node('Function', p)
 
 def p_var_decl(p):
-    'VarDecl : VAR_DECL IDENTIFIER COLON IDENTIFIER SEMICOLON'
+    'VarDecl : KW_VAR IDENTIFIER COLON IDENTIFIER SEMICOLON'
     p[0] = VariableNode(p[4], p[2])
     print_node('VarDecl', p)
 
