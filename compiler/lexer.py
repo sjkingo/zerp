@@ -19,6 +19,7 @@ class ZLexer(object):
         'COMMA',
         'LPAREN',
         'RPAREN',
+        'COLON',
     ] + list(reserved.values())
 
     errors = []
@@ -35,6 +36,7 @@ class ZLexer(object):
     t_COMMA = r','
     t_LPAREN = r'\('
     t_RPAREN = r'\)'
+    t_COLON = r':'
 
     def col(self, t):
         """Compute column number in input stream"""
