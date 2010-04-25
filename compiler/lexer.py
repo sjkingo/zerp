@@ -6,12 +6,15 @@ class ZLexer(object):
     reserved = {
         'begin': 'BEGIN',
         'end': 'END',
+        'var': 'VAR_DECL',
+        'print': 'PRINT_STMT',
     }
 
     tokens = [
         'NUMBER',
         'PLUS',
         'IDENTIFIER', # can handle reserved keywords
+        'NEWLINE',
     ] + list(reserved.values())
 
     t_PLUS = r'\+'
@@ -45,9 +48,10 @@ class ZLexer(object):
                 (self.filename, t.lexer.lineno, self.col(t), t.value[0]))
         t.lexer.skip(1)
 
-    def t_newline(self, t):
+    def t_NEWLINE(self, t):
         r'\n+'
         t.lexer.lineno += len(t.value)
+        return t # insert into token tree
 
     def t_NUMBER(self, t):
         r'\d+'
