@@ -16,7 +16,11 @@ class ZLexer(object):
 
     t_PLUS = r'\+'
 
+    # whitespace is only meaningful to seperate tokens
     t_ignore = ' \t'
+
+    # ignore from # to the end of a line
+    t_ignore_COMMENT = r'\#.*'
 
     def col(self, t):
         last = self.input.rfind('\n', 0, t.lexpos)
@@ -27,15 +31,16 @@ class ZLexer(object):
     def build(self, **kwargs):
         self.lexer = lex.lex(module=self, debug=1, **kwargs)
 
-    def run(self, input):
+    def run(self, input, filename=None):
         self.input = input
+        self.filename = filename
         self.lexer.input(input)
         for tok in self.lexer:
             print(tok)
 
     def t_error(self, t):
-        print('%d:%d: Illegal character \'%s\'' % (t.lexer.lineno, 
-                self.col(t), t.value[0]))
+        print('%s:%d:%d: Illegal character \'%s\'' % 
+                (self.filename, t.lexer.lineno, self.col(t), t.value[0]))
         t.lexer.skip(1)
 
     def t_newline(self, t):

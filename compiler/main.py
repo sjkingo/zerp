@@ -8,7 +8,7 @@ def run_lexer(file):
     l = lexer.ZLexer()
     l.build()
     with open(file, 'r') as fp:
-        l.run(fp.read())
+        l.run(fp.read(), filename=file)
 
 
 if __name__ == '__main__':
