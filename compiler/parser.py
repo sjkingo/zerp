@@ -5,7 +5,7 @@ import ply.yacc as yacc
 from ast import *
 from lexer import tokens
 
-debug = False
+debug = True
 
 def uniqify(l):
     n = []
@@ -39,6 +39,11 @@ def p_var_decl(p):
     p[0] = VariableNode(p[4], p[2])
     print_node('VarDecl', p)
 
+def p_assignment(p):
+    'Assignment : IDENTIFIER ASSIGN Expression SEMICOLON'
+    p[0] = AssignmentNode(p[1], p[3])
+    print_node('Assignment', p)
+
 def p_statement_list(p):
     '''StatementList : StatementList Statement
                      | e'''
@@ -59,7 +64,8 @@ def p_statement_list(p):
 
 def p_statement_exp(p):
     '''Statement : Expression SEMICOLON
-                 | VarDecl'''
+                 | VarDecl
+                 | Assignment'''
     p[0] = StatementNode(p[1])
     print_node('Statement', p)
 

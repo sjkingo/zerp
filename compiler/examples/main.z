@@ -1,9 +1,9 @@
 # this example shows variable declarations, assignment, addition
 # operator, and the print statement
 begin main()
-    var i, j, r: integer
-    i := 1
-    j := 2 
-    r := i + j
-    print r # 3
+    var i : integer;
+    var j : integer;
+    var r : integer;
+    i := 1;
+    j := 2;
 end

@@ -37,6 +37,19 @@ class VariableNode(Node):
     def _children(self):
         return []
 
+class AssignmentNode(Node):
+    def __init__(self, lhs, rhs):
+        self.type = 'assignment'
+        self.lhs = lhs
+        self.rhs = rhs
+
+    def __str__(self):
+        return '<%s %s to %s>' % (self.type, self.rhs, self.lhs)
+
+    @property
+    def _children(self):
+        return [self.rhs]
+
 class StatementNode(Node):
     def __init__(self, exp):
         self.type = 'statement'
@@ -104,6 +117,5 @@ def walk_tree(program_root):
     print(program_root.type)
     for funcs in program_root:
         print('  %s' % funcs)
-        print('    %s' % funcs._children.type)
         for stmt in funcs:
-            print('      %s' % stmt)
+            print('    %s' % stmt)
