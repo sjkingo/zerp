@@ -15,15 +15,24 @@ class ZLexer(object):
         'PLUS',
         'IDENTIFIER', # can handle reserved keywords
         'NEWLINE',
+        'ASSIGN',
+        'COMMA',
+        'LPAREN',
+        'RPAREN',
     ] + list(reserved.values())
-
-    t_PLUS = r'\+'
 
     # whitespace is only meaningful to seperate tokens
     t_ignore = ' \t'
 
     # ignore from # to the end of a line
     t_ignore_COMMENT = r'\#.*'
+
+    # tokens that do not require further processing
+    t_PLUS = r'\+'
+    t_ASSIGN = r':='
+    t_COMMA = r','
+    t_LPAREN = r'\('
+    t_RPAREN = r'\)'
 
     def col(self, t):
         """Compute column number in input stream"""
