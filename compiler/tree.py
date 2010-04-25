@@ -21,7 +21,7 @@ class FunctionNode(Node):
         self.stmt_list = stmt_list
 
     def __str__(self):
-        return '<%s %s()>' % (self.type, self.id)
+        return '<%s \'%s\'>' % (self.type, self.id)
 
     @property
     def _children(self):
@@ -64,7 +64,7 @@ class VariableNode(Node):
         self.id = id
 
     def __str__(self):
-        return '<%s %s(%s)>' % (self.type, self.static_type, self.id)
+        return '<%s %s(\'%s\')>' % (self.type, self.static_type, self.id)
 
     @property
     def _children(self):
@@ -89,7 +89,7 @@ class AssignmentNode(StatementNode):
         self.rhs = rhs
 
     def __str__(self):
-        return '<%s %s to %s>' % (self.type, self.rhs, self.lhs)
+        return '<%s %s to \'%s\'>' % (self.type, self.rhs, self.lhs)
 
     @property
     def _children(self):
@@ -118,7 +118,7 @@ class BinOpNode(ExpNode):
         self.right = right
 
     def __str__(self):
-        return '<%s %s %s %s>' % (self.type, self.left, self.op, self.right)
+        return '<%s %s \'%s\' %s>' % (self.type, self.left, self.op, self.right)
 
     @property
     def _children(self):
