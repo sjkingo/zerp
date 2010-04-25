@@ -21,6 +21,8 @@ class ZLexer(object):
         'RPAREN',
     ] + list(reserved.values())
 
+    errors = []
+
     # whitespace is only meaningful to seperate tokens
     t_ignore = ' \t'
 
@@ -43,16 +45,17 @@ class ZLexer(object):
 
     def build(self, **kwargs):
         # why this isn't __init__ I have no idea
-        self.lexer = lex.lex(module=self, debug=1, **kwargs)
+        self.lexer = lex.lex(module=self, **kwargs)
 
     def run(self, input, filename=None):
         """Take an input stream and return its tokens"""
         self.input = input
         self.filename = filename
         self.lexer.input(input)
-        return list(self.lexer)
+        return (list(self.lexer), self.errors)
 
     def t_error(self, t):
+        self.errors.append((t.lexer.lineno, self.col(t)))
         print('%s:%d:%d: Illegal character \'%s\'' % 
                 (self.filename, t.lexer.lineno, self.col(t), t.value[0]))
         t.lexer.skip(1)
