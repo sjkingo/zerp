@@ -109,6 +109,18 @@ class BinOpNode(ExpNode):
     def _children(self):
         return [self.left, self.right]
 
+class PrintNode(Node):
+    def __init__(self, exp):
+        self.type = 'print'
+        self.exp = exp
+
+    def __str__(self):
+        return '<%s %s>' % (self.type, self.exp)
+
+    @property
+    def _children(self):
+        return [self.exp]
+
 def walk_tree(program_root):
     if type(program_root) is not ProgramNode:
         print('walk_tree() was not passed a ProgramNode')

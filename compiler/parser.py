@@ -65,7 +65,8 @@ def p_statement_list(p):
 def p_statement_exp(p):
     '''Statement : Expression SEMICOLON
                  | VarDecl
-                 | Assignment'''
+                 | Assignment
+                 | PrintStatement'''
     p[0] = StatementNode(p[1])
     print_node('Statement', p)
 
@@ -83,6 +84,11 @@ def p_exp_var(p):
     'Expression : IDENTIFIER'
     p[0] = VariableNode('unknown', p[1])
     print_node('Variable', p)
+
+def p_print(p):
+    'PrintStatement : KW_PRINT Expression SEMICOLON'
+    p[0] = PrintNode(p[2])
+    print_node('Print', p)
 
 def p_error(p):
     if p is not None:
