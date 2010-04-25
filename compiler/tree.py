@@ -27,39 +27,13 @@ class FunctionNode(Node):
     def _children(self):
         return self.stmt_list
 
-class VariableNode(Node):
-    def __init__(self, type, id):
-        self.type = 'variable'
-        self.static_type = type
-        self.id = id
-
-    def __str__(self):
-        return '<%s %s(%s)>' % (self.type, self.static_type, self.id)
-
-    @property
-    def _children(self):
-        return []
-
-class AssignmentNode(Node):
-    def __init__(self, lhs, rhs):
-        self.type = 'assignment'
-        self.lhs = lhs
-        self.rhs = rhs
-
-    def __str__(self):
-        return '<%s %s to %s>' % (self.type, self.rhs, self.lhs)
-
-    @property
-    def _children(self):
-        return [self.rhs]
-
 class StatementNode(Node):
     def __init__(self, exp):
         self.type = 'statement'
         self.exp = exp
 
     def __str__(self):
-        return str(self.exp)
+        return '<%s %s>' % (self.type, self.exp)
 
     @property
     def _children(self):
@@ -82,6 +56,32 @@ class StatementListNode(Node):
     @property
     def _children(self):
         return self.stmts
+
+class VariableNode(Node):
+    def __init__(self, type, id):
+        self.type = 'variable'
+        self.static_type = type
+        self.id = id
+
+    def __str__(self):
+        return '<%s %s(%s)>' % (self.type, self.static_type, self.id)
+
+    @property
+    def _children(self):
+        return []
+
+class AssignmentNode(StatementNode):
+    def __init__(self, lhs, rhs):
+        self.type = 'assignment'
+        self.lhs = lhs
+        self.rhs = rhs
+
+    def __str__(self):
+        return '<%s %s to %s>' % (self.type, self.rhs, self.lhs)
+
+    @property
+    def _children(self):
+        return [self.rhs]
 
 class ExpNode(Node):
     type = 'generic exp'
@@ -112,17 +112,10 @@ class BinOpNode(ExpNode):
     def _children(self):
         return [self.left, self.right]
 
-class PrintNode(Node):
+class PrintNode(StatementNode):
     def __init__(self, exp):
+        super(PrintNode, self).__init__(exp)
         self.type = 'print'
-        self.exp = exp
-
-    def __str__(self):
-        return '<%s %s>' % (self.type, self.exp)
-
-    @property
-    def _children(self):
-        return [self.exp]
 
 def walk_tree(program_root):
     if type(program_root) is not ProgramNode:
