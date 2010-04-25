@@ -3,6 +3,7 @@
 from __future__ import print_function
 import sys
 
+from ast import walk_tree
 import lexer
 import parser
 
@@ -12,14 +13,14 @@ def run_lexer(file):
     l = lexer.ZLexer()
     l.build()
     with open(file, 'r') as fp:
-        lexer, errors = l.run(fp.read(), filename=file)
+        lex, errors = l.run(fp.read(), filename=file)
     if len(errors) != 0:
         print('%d error(s) found while lexing' % len(errors), file=sys.stderr)
-    return lexer 
+    return lex
 
-def run_parser(lexer):
+def run_parser(lex):
     p = parser.ZParser()
-    p.run(lexer)
+    return p.run(lex)
 
 
 if __name__ == '__main__':
@@ -27,4 +28,5 @@ if __name__ == '__main__':
         print('Usage: %s input-file' % sys.argv[0], file=sys.stderr)
         exit(1)
     l = run_lexer(sys.argv[1])
-    run_parser(l)
+    p = run_parser(l)
+    walk_tree(p)

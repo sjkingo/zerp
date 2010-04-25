@@ -2,25 +2,30 @@ from __future__ import print_function
 
 import ply.lex as lex
 
-class ZLexer(object):
-    reserved = {
-        'begin': 'BEGIN',
-        'end': 'END',
-        'var': 'VAR_DECL',
-        'print': 'PRINT_STMT',
-    }
+reserved = {
+    'begin': 'BEGIN',
+    'end': 'END',
+    'var': 'VAR_DECL',
+    'print': 'PRINT_STMT',
+}
 
-    tokens = [
-        'NUMBER',
-        'PLUS',
-        'IDENTIFIER', # can handle reserved keywords
-        'NEWLINE',
-        'ASSIGN',
-        'COMMA',
-        'LPAREN',
-        'RPAREN',
-        'COLON',
-    ] + list(reserved.values())
+tokens = [
+    'NUMBER',
+    'PLUS',
+    'IDENTIFIER', # can handle reserved keywords
+    'NEWLINE',
+    'ASSIGN',
+    'COMMA',
+    'LPAREN',
+    'RPAREN',
+    'COLON',
+    'SEMICOLON',
+    'EOF',
+] + list(reserved.values())
+
+class ZLexer(object):
+    reserved = reserved
+    tokens = tokens
 
     errors = []
 
@@ -37,6 +42,7 @@ class ZLexer(object):
     t_LPAREN = r'\('
     t_RPAREN = r'\)'
     t_COLON = r':'
+    t_SEMICOLON = r';'
 
     def col(self, t):
         """Compute column number in input stream"""
@@ -65,7 +71,7 @@ class ZLexer(object):
     def t_NEWLINE(self, t):
         r'\n+'
         t.lexer.lineno += len(t.value)
-        return t # insert into token tree
+        #return t # insert into token tree
 
     def t_NUMBER(self, t):
         r'\d+'
