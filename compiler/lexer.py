@@ -54,7 +54,7 @@ class ZLexer(object):
         self.input = input
         self.filename = filename
         self.lexer.input(input)
-        return (list(self.lexer), self.errors)
+        return (self.lexer, self.errors)
 
     def t_error(self, t):
         self.errors.append((t.lexer.lineno, self.col(t)))
