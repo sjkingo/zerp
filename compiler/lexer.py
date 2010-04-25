@@ -13,14 +13,12 @@ tokens = [
     'NUMBER',
     'PLUS',
     'IDENTIFIER', # can handle reserved keywords
-    'NEWLINE',
     'ASSIGN',
     'COMMA',
     'LPAREN',
     'RPAREN',
     'COLON',
     'SEMICOLON',
-    'EOF',
 ] + list(reserved.values())
 
 class ZLexer(object):
@@ -68,10 +66,9 @@ class ZLexer(object):
                 (self.filename, t.lexer.lineno, self.col(t), t.value[0]))
         t.lexer.skip(1)
 
-    def t_NEWLINE(self, t):
+    def t_newline(self, t):
         r'\n+'
         t.lexer.lineno += len(t.value)
-        #return t # insert into token tree
 
     def t_NUMBER(self, t):
         r'\d+'
