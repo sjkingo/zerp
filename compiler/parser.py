@@ -2,8 +2,8 @@ from __future__ import print_function
 
 import ply.yacc as yacc
 
-from ast import *
 from lexer import tokens
+from tree import *
 
 debug = True
 

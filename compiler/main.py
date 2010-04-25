@@ -3,9 +3,9 @@
 from __future__ import print_function
 import sys
 
-from ast import walk_tree
 import lexer
 import parser
+from tree import walk_tree
 
 def run_lexer(file):
     """Runs the lexer over contents of file and returns the instance for
