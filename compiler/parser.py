@@ -36,7 +36,8 @@ def p_function(p):
 
 def p_var_decl(p):
     'VarDecl : KW_VAR IDENTIFIER COLON IDENTIFIER SEMICOLON'
-    p[0] = VariableNode(p[4], p[2])
+    v = VariableNode(p[4], p[2])
+    p[0] = VariableDeclNode(v)
     print_node('VarDecl', p)
 
 def p_assignment(p):

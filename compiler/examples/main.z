@@ -8,4 +8,6 @@ begin main()
     j := 2;
     r := i + j;
     print r;
+
+    var q : integer;
 end

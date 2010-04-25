@@ -70,6 +70,18 @@ class VariableNode(Node):
     def _children(self):
         return []
 
+class VariableDeclNode(Node):
+    def __init__(self, var_node):
+        self.type = 'var_decl'
+        self.var_node = var_node
+
+    def __str__(self):
+        return '<%s %s>' % (self.type, self.var_node)
+
+    @property
+    def _children(self):
+        return [self.var_node]
+
 class AssignmentNode(StatementNode):
     def __init__(self, lhs, rhs):
         self.type = 'assignment'
