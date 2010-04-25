@@ -34,6 +34,11 @@ def p_function(p):
     p[0] = FunctionNode(p[2])
     print_node('Function', p)
 
+def p_var_decl(p):
+    'VarDecl : VAR_DECL IDENTIFIER COLON IDENTIFIER SEMICOLON'
+    p[0] = VariableNode(p[4], p[2])
+    print_node('VarDecl', p)
+
 def p_statement_list(p):
     '''StatementList : StatementList Statement
                      | e'''
@@ -53,7 +58,8 @@ def p_statement_list(p):
     print_node('StatementList', p)
 
 def p_statement_exp(p):
-    'Statement : Expression SEMICOLON'
+    '''Statement : Expression SEMICOLON
+                 | VarDecl'''
     p[0] = StatementNode(p[1])
     print_node('Statement', p)
 

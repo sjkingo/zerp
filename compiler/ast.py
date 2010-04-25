@@ -23,6 +23,19 @@ class FunctionNode(Node):
     def _children(self):
         return self.stmt_list
 
+class VariableNode(Node):
+    def __init__(self, type, id):
+        self.type = 'variable'
+        self.static_type = type
+        self.id = id
+
+    def __str__(self):
+        return '<%s %s(%s)>' % (self.type, self.static_type, self.id)
+
+    @property
+    def _children(self):
+        return []
+
 class StatementNode(Node):
     def __init__(self, exp):
         self.type = 'statement'

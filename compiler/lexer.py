@@ -21,9 +21,14 @@ tokens = [
     'SEMICOLON',
 ] + list(reserved.values())
 
+types = [
+    'integer',
+]
+
 class ZLexer(object):
     reserved = reserved
     tokens = tokens
+    types = types
 
     errors = []
 
