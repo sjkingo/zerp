@@ -11,7 +11,7 @@ class ZLexer(object):
     tokens = [
         'NUMBER',
         'PLUS',
-        'ID', # can handle reserved keywords
+        'IDENTIFIER', # can handle reserved keywords
     ] + list(reserved.values())
 
     t_PLUS = r'\+'
@@ -23,20 +23,22 @@ class ZLexer(object):
     t_ignore_COMMENT = r'\#.*'
 
     def col(self, t):
+        """Compute column number in input stream"""
         last = self.input.rfind('\n', 0, t.lexpos)
         if last < 0:
             last = 0
         return t.lexpos - last + 1
 
     def build(self, **kwargs):
+        # why this isn't __init__ I have no idea
         self.lexer = lex.lex(module=self, debug=1, **kwargs)
 
     def run(self, input, filename=None):
+        """Take an input stream and return its tokens"""
         self.input = input
         self.filename = filename
         self.lexer.input(input)
-        for tok in self.lexer:
-            print(tok)
+        return list(self.lexer)
 
     def t_error(self, t):
         print('%s:%d:%d: Illegal character \'%s\'' % 
@@ -52,7 +54,8 @@ class ZLexer(object):
         t.value = int(t.value)
         return t
 
-    def t_ID(self, t):
+    def t_IDENTIFIER(self, t):
         r'[a-zA-Z_][a-zA-Z_0-9]*'
-        t.type = self.reserved.get(t.value, 'ID') # try to resolve reserved kw
+        # try and see if this token is a reserved keyword
+        t.type = self.reserved.get(t.value, 'IDENTIFIER')
         return t

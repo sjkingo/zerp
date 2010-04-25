@@ -8,7 +8,8 @@ def run_lexer(file):
     l = lexer.ZLexer()
     l.build()
     with open(file, 'r') as fp:
-        l.run(fp.read(), filename=file)
+        tokens = l.run(fp.read(), filename=file)
+    return tokens
 
 
 if __name__ == '__main__':
@@ -16,4 +17,6 @@ if __name__ == '__main__':
     if len(sys.argv) != 2:
         print('Usage: %s input-file' % sys.argv[0], file=sys.stderr)
         exit(1)
-    run_lexer(sys.argv[1])
+    tokens = run_lexer(sys.argv[1])
+    for t in tokens:
+        print(t)
