@@ -12,12 +12,13 @@ class ProgramNode(Node):
         return self.funcs
 
 class FunctionNode(Node):
-    def __init__(self, stmt_list):
+    def __init__(self, id, stmt_list):
         self.type = 'function'
+        self.id = id
         self.stmt_list = stmt_list
 
     def __str__(self):
-        return str(self.stmt_list)
+        return '<%s %s()>' % (self.type, self.id)
 
     @property
     def _children(self):
@@ -102,7 +103,7 @@ def walk_tree(program_root):
 
     print(program_root.type)
     for funcs in program_root:
-        print('  %s' % funcs.type)
+        print('  %s' % funcs)
         print('    %s' % funcs._children.type)
         for stmt in funcs:
             print('      %s' % stmt)

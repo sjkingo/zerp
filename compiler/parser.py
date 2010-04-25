@@ -30,8 +30,8 @@ def p_empty(p):
     pass
 
 def p_function(p):
-    'Function : KW_BEGIN StatementList KW_END'
-    p[0] = FunctionNode(p[2])
+    'Function : KW_BEGIN IDENTIFIER LPAREN RPAREN StatementList KW_END'
+    p[0] = FunctionNode(p[2], p[5])
     print_node('Function', p)
 
 def p_var_decl(p):
@@ -74,9 +74,9 @@ def p_exp_constant(p):
     print_node('Constant', p)
 
 def p_error(p):
-    t = p.type
-    print('Syntax error at token %s' % t)
-    yacc.errok()
+    if p is not None:
+        print('Syntax error at token %s' % p.type)
+        yacc.errok()
 
 class ZParser(object):
     def run(self, lexer):
