@@ -13,7 +13,7 @@ language that is easy to parse, whilst retaining the "feel" of a real language
 A Z program
 -----------
 
-A Z program is simply a series of contructs present in a .z file. This is the
+A Z program is simply a series of constructs present in a .z file. This is the
 top-level construct that the compiler knows about. When compiling your program,
 you would pass this file to the compiler. Since there is no way to "link"
 multiple programs, a .z file will contain the entire routines for a single
@@ -24,7 +24,7 @@ Functions
 
 The only construct that may appear in the top-level Z program is a function, of
 which there may be more than one (but certainly not zero!). This means that all
-other constructs must live inside a function. To differenciate between
+other constructs must live inside a function. To differentiate between
 functions, each function must have a globally unique name. One such function
 must be named "main" (without the quotes). This is similar to a C/C++ program.
 This main function is the entry point for the program -- it is the first thing
