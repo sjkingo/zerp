@@ -6,4 +6,5 @@ begin main()
     var r : integer;
     i := 1;
     j := 2;
+    r := i + j;
 end

@@ -79,6 +79,11 @@ def p_exp_constant(p):
     p[0] = ConstantNode(p[1])
     print_node('Constant', p)
 
+def p_exp_var(p):
+    'Expression : IDENTIFIER'
+    p[0] = VariableNode('unknown', p[1])
+    print_node('Variable', p)
+
 def p_error(p):
     if p is not None:
         print('Syntax error at token %s' % p.type)
