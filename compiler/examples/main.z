@@ -5,5 +5,5 @@ begin main()
     i := 1
     j := 2 
     r := i + j
-    print r
+    print r # 3
 end
