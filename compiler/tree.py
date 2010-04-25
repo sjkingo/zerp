@@ -1,4 +1,7 @@
 class Node(object):
+    def __str__(self):
+        return '<%s>' % self.type
+
     def __iter__(self):
         return iter(self._children)
 
@@ -126,7 +129,7 @@ def walk_tree(program_root):
         print('walk_tree() was not passed a ProgramNode')
         return
 
-    print(program_root.type)
+    print(program_root)
     for funcs in program_root:
         print('  %s' % funcs)
         for stmt in funcs:
