@@ -2,7 +2,7 @@ class Node(object):
     def __iter__(self):
         return iter(self._children)
 
-class Program(Node):
+class ProgramNode(Node):
     def __init__(self, funcs):
         self.type = 'program'
         self.funcs = funcs
@@ -11,7 +11,7 @@ class Program(Node):
     def _children(self):
         return self.funcs
 
-class Function(Node):
+class FunctionNode(Node):
     def __init__(self, stmt_list):
         self.type = 'function'
         self.stmt_list = stmt_list
@@ -23,7 +23,7 @@ class Function(Node):
     def _children(self):
         return self.stmt_list
 
-class Statement(Node):
+class StatementNode(Node):
     def __init__(self, exp):
         self.type = 'statement'
         self.exp = exp
@@ -35,7 +35,7 @@ class Statement(Node):
     def _children(self):
         return [self.exp]
 
-class StatementList(Node):
+class StatementListNode(Node):
     def __init__(self, stmts):
         self.type = 'statement[]'
         self.stmts = stmts
@@ -53,10 +53,10 @@ class StatementList(Node):
     def _children(self):
         return self.stmts
 
-class Exp(Node):
+class ExpNode(Node):
     type = 'generic exp'
 
-class Constant(Exp):
+class ConstantNode(ExpNode):
     def __init__(self, val):
         self.type = 'constant'
         self.value = int(val)
@@ -68,7 +68,7 @@ class Constant(Exp):
     def _children(self):
         return []
 
-class BinOp(Exp):
+class BinOpNode(ExpNode):
     def __init__(self, left, op, right):
         self.type = 'binop'
         self.left = left
@@ -83,8 +83,8 @@ class BinOp(Exp):
         return [self.left, self.right]
 
 def walk_tree(program_root):
-    if type(program_root) is not Program:
-        print('walk_tree() was not passed Program node')
+    if type(program_root) is not ProgramNode:
+        print('walk_tree() was not passed a ProgramNode')
         return
 
     print(program_root.type)

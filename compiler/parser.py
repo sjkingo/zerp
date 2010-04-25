@@ -22,7 +22,7 @@ def print_node(name, children):
 # never put anything above here!
 def p_program(p):
     'Program : Function' 
-    p[0] = Program([p[1]])
+    p[0] = ProgramNode([p[1]])
     print_node('Program', p)
 
 def p_empty(p):
@@ -31,7 +31,7 @@ def p_empty(p):
 
 def p_function(p):
     'Function : BEGIN StatementList END'
-    p[0] = Function(p[2])
+    p[0] = FunctionNode(p[2])
     print_node('Function', p)
 
 def p_statement_list(p):
@@ -42,29 +42,29 @@ def p_statement_list(p):
     l = uniqify(p)
     sl = []
     for i in l:
-        if type(i) is StatementList:
+        if type(i) is StatementListNode:
             if len(i) != 0:
                 sl.extend(i)
         else:
             sl.append(i)
 
     if len(sl) != 0:
-        p[0] = StatementList(sl)
+        p[0] = StatementListNode(sl)
     print_node('StatementList', p)
 
 def p_statement_exp(p):
     'Statement : Expression SEMICOLON'
-    p[0] = Statement(p[1])
+    p[0] = StatementNode(p[1])
     print_node('Statement', p)
 
 def p_exp_binop(p):
     'Expression : Expression PLUS Expression'
-    p[0] = BinOp(p[1], p[2], p[3])
+    p[0] = BinOpNode(p[1], p[2], p[3])
     print_node('Expression', p)
 
 def p_exp_constant(p):
     'Expression : NUMBER'
-    p[0] = Constant(p[1])
+    p[0] = ConstantNode(p[1])
     print_node('Constant', p)
 
 def p_error(p):
