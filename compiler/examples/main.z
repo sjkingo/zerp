@@ -1,5 +1,12 @@
-# this example shows variable declarations, assignment, addition
-# operator, and the print statement
+# This example shows the following constructs:
+#   - comments
+#   - function definition
+#   - variable declarations
+#   - assignment
+#   - constants
+#   - expression (the plus operator)
+#   - function call
+
 begin main()
     var i : integer;
     var j : integer;
@@ -7,7 +14,5 @@ begin main()
     i := 1;
     j := 2;
     r := i + j;
-    print r;
-
-    var q : integer;
+    print(upper(r));
 end

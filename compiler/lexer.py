@@ -6,7 +6,6 @@ reserved = {
     'begin': 'KW_BEGIN',
     'end': 'KW_END',
     'var': 'KW_VAR',
-    'print': 'KW_PRINT',
 }
 
 tokens = [

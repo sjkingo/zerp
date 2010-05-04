@@ -124,10 +124,18 @@ class BinOpNode(ExpNode):
     def _children(self):
         return [self.left, self.right]
 
-class PrintNode(StatementNode):
-    def __init__(self, exp):
-        super(PrintNode, self).__init__(exp)
-        self.type = 'print'
+class FunctionCallNode(StatementNode):
+    def __init__(self, name, args_exp):
+        self.type = 'func_call'
+        self.name = name
+        self.args_exp = args_exp
+
+    def __str__(self):
+        return '<%s %s(%s)>' % (self.type, self.name, self.args_exp)
+
+    @property
+    def _children(self):
+        return [self.args_exp]
 
 def walk_tree(program_root):
     if type(program_root) is not ProgramNode:

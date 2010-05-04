@@ -5,7 +5,7 @@ import ply.yacc as yacc
 from lexer import tokens
 from tree import *
 
-debug = True
+debug = False
 
 def uniqify(l):
     n = []
@@ -66,8 +66,7 @@ def p_statement_list(p):
 def p_statement_exp(p):
     '''Statement : Expression SEMICOLON
                  | VarDecl
-                 | Assignment
-                 | PrintStatement'''
+                 | Assignment'''
     p[0] = StatementNode(p[1])
     print_node('Statement', p)
 
@@ -86,10 +85,14 @@ def p_exp_var(p):
     p[0] = VariableNode('unknown', p[1])
     print_node('Variable', p)
 
-def p_print(p):
-    'PrintStatement : KW_PRINT Expression SEMICOLON'
-    p[0] = PrintNode(p[2])
-    print_node('Print', p)
+def p_exp_func_call(p):
+    'Expression : FunctionCall'
+    p[0] = p[1]
+
+def p_func_call(p):
+    'FunctionCall : IDENTIFIER LPAREN Expression RPAREN'
+    p[0] = FunctionCallNode(p[1], p[3])
+    print_node('FunctionCall', p)
 
 def p_error(p):
     if p is not None:
@@ -98,5 +101,5 @@ def p_error(p):
 
 class ZParser(object):
     def run(self, lexer):
-        self.parser = yacc.yacc(debug=True, outputdir='out')
+        self.parser = yacc.yacc(debug=True)
         return self.parser.parse(lexer=lexer)
