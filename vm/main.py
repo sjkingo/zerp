@@ -21,7 +21,8 @@ def parse_program(filename):
     parsed = []
     for l in lines:
         l = l.strip()
-        if l[0] == '#': continue
+        if len(l) == 0 or l[0] == '#':
+            continue
         split = l.split()
         parsed.append((split[0], split[1:]))
     return parsed
