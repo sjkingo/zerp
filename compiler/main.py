@@ -10,6 +10,9 @@ from tree import walk_tree
 
 def parse_args():
     parser = OptionParser(usage='usage: %prog [options] filename')
+    parser.add_option('-o', dest='out', metavar='FILE', default='z.out',
+            help='Write executable output to FILE (defaults to z.out)')
+
     parser.add_option('-v', '--verbose', dest='verbose', action='store_true',
             default=False, help='Be verbose during all stages of compiling')
     parser.add_option('-l', dest='lexer_verbose', action='store_true',
@@ -38,6 +41,10 @@ def run_parser(lex, verbose):
     p = parser.ZParser()
     return p.run(lex, verbose)
 
+def run_generator(dest_filename, tree):
+    c = codegen.CodeGenerator()
+    c.generate(dest_filename, tree)
+
 
 if __name__ == '__main__':
     opts, filename = parse_args()
@@ -50,5 +57,4 @@ if __name__ == '__main__':
     if ast_verbose:
         walk_tree(p)
 
-    v = codegen.CodeGenVisitor()
-    v.visit(p)
+    run_generator(opts.out, p)
