@@ -1,8 +1,12 @@
 from __future__ import print_function
 import inspect
+import logging
 
 import builtins
 from exc import *
+
+# by default debugging is switched on
+logging.basicConfig(level=logging.DEBUG, format='%(levelname)s: %(message)s')
 
 class Stack(object):
     s = []
@@ -17,10 +21,10 @@ class Stack(object):
             raise StackUnderflow()
 
     def print(self):
-        print('+------')
+        logging.debug('+------')
         for i, f in enumerate(reversed(self.s)):
-            print('| %s' % f)
-        print('+------')
+            logging.debug('| %s' % f)
+        logging.debug('+------')
 
 class Machine(object):
     stack = Stack()
@@ -34,12 +38,9 @@ class Machine(object):
     builtins = builtins.funcs
 
     def __init__(self, verbose):
-        self.verbose = verbose
+        if not verbose:
+            logging.disable(logging.DEBUG)
         self.stack.push(0) # return value
-
-    def debug(self, msg):
-        if self.verbose:
-            print('DEBUG: %s' % msg)
 
     def execute(self, ins):
         try:
@@ -50,9 +51,9 @@ class Machine(object):
                 except AttributeError:
                     raise InvalidOpcode(opcode)
                 try:
-                    self.debug('%s %s' % (opcode, ' '.join(args)))
+                    logging.debug('%s %s' % (opcode, ' '.join(args)))
                     func(*args)
-                    self.debug('--')
+                    logging.debug('--')
                 except TypeError, e:
                     if '%s() takes' % opcode in str(e):
                         raise OpcodeArgumentsInvalid(opcode)
@@ -77,20 +78,19 @@ class Machine(object):
         if reg[1:] not in self.regs:
             raise InvalidRegister(reg)
         val = self.regs[reg[1:]]
-        self.debug('%s -> %s' % (reg, val))
+        logging.debug('%s -> %s' % (reg, val))
         return val
 
     def store_reg(self, reg, val):
         if reg[1:] not in self.regs:
             raise InvalidRegister(reg)
         self.regs[reg[1:]] = val
-        self.debug('%s <- %s' % (reg, val))
+        logging.debug('%s <- %s' % (reg, val))
 
     # Machine instructions
 
     def i_push(self, x):
         """PUSH reg
-
         Push the value in the named register on to the stack."""
 
         val = self.get_reg(str(x))
@@ -99,7 +99,6 @@ class Machine(object):
 
     def i_pop(self):
         """POP
-
         Pop the value off the stop of the stack."""
 
         v = self.stack.pop()
@@ -108,14 +107,12 @@ class Machine(object):
 
     def i_store(self, val, reg):
         """STORE constant dest
-
         Store the immediate value 'constant' in the given register."""
 
         self.store_reg(str(reg), val)
 
     def i_call(self, func_name):
         """CALL name
-        
         Call the function given by name. The arguments should be pushed on to 
         the stack in reverse order first."""
 
@@ -135,7 +132,7 @@ class Machine(object):
             x = self.stack.pop()
             args.append(x)
 
-        self.debug('Calling %s(%s)' % (func_name, ', '.join(args)))
+        logging.debug('Calling %s(%s)' % (func_name, ', '.join(args)))
 
         # call the function and capture its return. Note that this isn't a 
         # bound method so pass the machine instance.
@@ -147,7 +144,6 @@ class Machine(object):
 
     def i_add(self):
         """ADD
-        
         Adds the value on the top of the stack to the value on the second
         top of stack (popping both in the process) and pushes on the result."""
 
@@ -158,7 +154,6 @@ class Machine(object):
 
     def i_sub(self):
         """SUB
-
         Subtract the top of the stack from the second top of stack (popping
         both values off in the process) and pushes the result on."""
 
@@ -169,7 +164,6 @@ class Machine(object):
 
     def i_equ(self):
         """EQU
-
         Compare the top of stack with the second top of stack (popping both
         off in the process) and pushes 1 if they are equal, or 0 otherwise."""
 
