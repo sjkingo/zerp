@@ -1,0 +1,4 @@
+syntax: glob
+compiler/parser.out
+compiler/parsetab.py
+z.out
