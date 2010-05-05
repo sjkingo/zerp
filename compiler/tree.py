@@ -2,6 +2,11 @@ from __future__ import print_function
 
 import dispatch
 
+from symtab import SymbolTable
+import ztypes
+
+symtab = SymbolTable()
+
 class Node(object):
     def __str__(self):
         return '<%s>' % self.type
@@ -67,6 +72,18 @@ class VariableNode(Node):
         self.static_type = type
         self.id = id
 
+        if type != 'unknown':
+            # declaration, add to symbol table - unless the parser is buggy,
+            # the type should be a known type
+            self.real_type = ztypes.known_types[type](id)
+            symtab.add(self.real_type)
+        else:
+            # reference, fetch from symbol table
+            self.real_type = symtab.get(id)
+            if self.real_type is None:
+                raise Exception('variable \'%s\' undeclared' % id)
+            self.static_type = self.real_type.type_name
+
     def __str__(self):
         return '<%s %s(\'%s\')>' % (self.type, self.static_type, self.id)
 
@@ -89,8 +106,11 @@ class VariableDeclNode(Node):
 class AssignmentNode(StatementNode):
     def __init__(self, lhs, rhs):
         self.type = 'assignment'
-        self.lhs = lhs
+        self.lhs = symtab.get(lhs)
         self.rhs = rhs
+
+        if self.lhs is None:
+            raise Exception('lhs variable \'%s\' undeclared' % lhs)
 
     def __str__(self):
         return '<%s %s to \'%s\'>' % (self.type, self.rhs, self.lhs)

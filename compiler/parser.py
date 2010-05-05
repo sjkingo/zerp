@@ -35,10 +35,14 @@ def p_function(p):
     print_node('Function', p)
 
 def p_var_decl(p):
-    'VarDecl : KW_VAR IDENTIFIER COLON IDENTIFIER SEMICOLON'
+    'VarDecl : KW_VAR IDENTIFIER COLON ZType SEMICOLON'
     v = VariableNode(p[4], p[2])
     p[0] = VariableDeclNode(v)
     print_node('VarDecl', p)
+
+def p_ztype(p):
+    '''ZType : KW_INTEGER'''
+    p[0] = p[1]
 
 def p_assignment(p):
     'Assignment : IDENTIFIER ASSIGN Expression SEMICOLON'

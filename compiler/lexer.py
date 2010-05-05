@@ -6,6 +6,7 @@ reserved = {
     'begin': 'KW_BEGIN',
     'end': 'KW_END',
     'var': 'KW_VAR',
+    'integer': 'KW_INTEGER',
 }
 
 tokens = [
@@ -20,14 +21,9 @@ tokens = [
     'SEMICOLON',
 ] + list(reserved.values())
 
-types = [
-    'integer',
-]
-
 class ZLexer(object):
     reserved = reserved
     tokens = tokens
-    types = types
 
     errors = []
 
