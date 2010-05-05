@@ -29,6 +29,7 @@ class Machine(object):
                 try:
                     self.debug('%s %s' % (opcode, ' '.join(args)))
                     func(*args)
+                    self.debug('--')
                 except TypeError, e:
                     if '%s() takes' % opcode in str(e):
                         raise OpcodeArgumentsInvalid(opcode)

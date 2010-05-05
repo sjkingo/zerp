@@ -3,4 +3,5 @@ store 12 %a
 push %a
 pop
 pop
+# return 12
 push %a
