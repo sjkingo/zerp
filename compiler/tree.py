@@ -197,13 +197,24 @@ class TreeVisitor(object):
     def visit(self, node):
         map(self.visit, node._children)
 
+    @visit.when(ProgramNode)
+    def visit(self, node):
+        if self.output:
+            print(node)
+        for s in node:
+            self.visit(s)
+
     @visit.when(FunctionNode)
     def visit(self, node):
+        if self.output:
+            print('  %s' % node)
         self.visit(node._children)
 
     @visit.when(StatementNode)
     def visit(self, node):
         for s in node:
+            if self.output:
+                print('    %s' % s)
             self.visit(s)
 
     @visit.when(FunctionCallNode)
