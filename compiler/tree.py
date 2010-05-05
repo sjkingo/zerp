@@ -110,6 +110,11 @@ class ConstantNode(ExpNode):
     def _children(self):
         return []
 
+    def generate(self):
+        # use GP register %a
+        print('store %d %%a' % self.value)
+        print('push %a')
+
 class BinOpNode(ExpNode):
     ops = {
         '+': 'add',
@@ -130,6 +135,9 @@ class BinOpNode(ExpNode):
     def _children(self):
         return [self.left, self.right]
 
+    def generate(self):
+        print(self.op)
+
 class FunctionCallNode(StatementNode):
     def __init__(self, name, args_exp):
         self.type = 'func_call'
@@ -142,6 +150,9 @@ class FunctionCallNode(StatementNode):
     @property
     def _children(self):
         return [self.args_exp]
+
+    def generate(self):
+        print('call %s' % self.name)
 
 class ArgumentsNode(Node):
     def __init__(self, left, right=None):

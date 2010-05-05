@@ -16,7 +16,6 @@ class CodeGenVisitor(object):
 
     @visit.when(Node)
     def visit(self, node):
-        """Start at the top-level tree node"""
         map(self.visit, node._children)
 
     @visit.when(FunctionNode)
@@ -32,7 +31,7 @@ class CodeGenVisitor(object):
     def visit(self, node):
         for s in node:
             self.visit(s)
-        print('call %s' % node.name)
+        node.generate()
 
     @visit.when(ArgumentsNode)
     def visit(self, node):
@@ -42,14 +41,11 @@ class CodeGenVisitor(object):
     @visit.when(BinOpNode)
     def visit(self, node):
         map(self.visit, node._children)
-        print(node.op)
+        node.generate()
 
     @visit.when(ConstantNode)
     def visit(self, node):
-        """We store the immediate value in a register and push it on to the
-        stack."""
-        print('store %d %%a' % node.value)
-        print('push %a')
+        node.generate()
 
 class CodeGenerator(object):
     def __init__(self):
