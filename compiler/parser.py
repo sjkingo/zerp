@@ -5,7 +5,7 @@ import ply.yacc as yacc
 from lexer import tokens
 from tree import *
 
-debug = True
+debug = False
 
 def uniqify(l):
     n = []
@@ -109,6 +109,8 @@ def p_error(p):
         yacc.errok()
 
 class ZParser(object):
-    def run(self, lexer):
-        self.parser = yacc.yacc(debug=True)
+    def run(self, lexer, verbose):
+        global debug
+        debug = verbose
+        self.parser = yacc.yacc(debug=verbose)
         return self.parser.parse(lexer=lexer)
