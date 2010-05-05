@@ -1,0 +1,10 @@
+# This example shows the following constructs:
+#   - comments
+#   - function definition
+#   - constants
+#   - expression (the plus operator)
+#   - function call
+
+begin main()
+    print(1 + 2);
+end

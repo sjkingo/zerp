@@ -111,14 +111,20 @@ class ConstantNode(ExpNode):
         return []
 
 class BinOpNode(ExpNode):
+    ops = {
+        '+': 'add',
+    }
+
     def __init__(self, left, op, right):
         self.type = 'binop'
         self.left = left
-        self.op = op
+        self.op_sym = op
+        self.op = self.ops[op]
         self.right = right
 
     def __str__(self):
-        return '<%s %s \'%s\' %s>' % (self.type, self.left, self.op, self.right)
+        return '<%s %s \'%s\' %s>' % (self.type, self.left, self.op_sym, 
+                self.right)
 
     @property
     def _children(self):

@@ -3,6 +3,7 @@
 from __future__ import print_function
 from optparse import OptionParser
 
+import codegen
 import lexer
 import parser
 from tree import walk_tree
@@ -48,3 +49,6 @@ if __name__ == '__main__':
     p = run_parser(l, verbose=parser_verbose)
     if ast_verbose:
         walk_tree(p)
+
+    v = codegen.CodeGenVisitor()
+    v.visit(p)
