@@ -1,12 +1,17 @@
 #!/home/sam/Code/zerp/vm/main.py
 # compiled by blah @ bloh
+
 store 12 %a
+store 5 %b
+
+# a useless push/pop
 push %a
-pop
 pop
 
-# print '12'
+# do some addition and print its result (should be 17)
 push %a
+push %b
+add
 call print
 
 # return 12

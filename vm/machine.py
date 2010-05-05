@@ -84,10 +84,11 @@ class Machine(object):
 
     def i_pop(self):
         try:
-            self.stack.pop()
+            v = self.stack.pop()
         except IndexError:
             raise StackUnderflow()
         self.print_stack()
+        return v
 
     def i_store(self, val, reg):
         self.store_reg(str(reg), val)
@@ -113,7 +114,7 @@ class Machine(object):
             else:
                 args.append(str(x))
 
-        self.debug('Calling %s(%s)' % (func_name, args))
+        self.debug('Calling %s(%s)' % (func_name, ', '.join(args)))
 
         # call the function and capture its return. Note that this isn't a 
         # bound method so pass the machine instance.
@@ -121,4 +122,13 @@ class Machine(object):
 
         # Push the return back on the stack and we're done
         self.stack.append(str(ret))
+        self.print_stack()
+
+    def i_add(self):
+        """Adds the value on the top of the stack to the value on the second
+        top of stack (popping both in the process) and pushes on the result.
+        """
+        v1 = int(self.i_pop())
+        v2 = int(self.i_pop())
+        self.stack.append(v1 + v2)
         self.print_stack()
