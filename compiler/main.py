@@ -6,6 +6,7 @@ from optparse import OptionParser, OptionGroup
 import codegen
 import lexer
 import parser
+import tree
 
 def parse_args():
     parser = OptionParser(usage='usage: %prog [options] input-filename',
@@ -64,6 +65,12 @@ if __name__ == '__main__':
 
     l = run_lexer(filename, verbose=opts.verbose)
     p = run_parser(l, verbose=opts.verbose)
+    if opts.verbose:
+        v = tree.TreeVisitor('output')
+        print('-- AST --')
+        v.visit(p) # print out the AST
+        print('--')
     if opts.stop_parser:
         exit(0)
+
     run_generator(opts.out, p)
