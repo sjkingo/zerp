@@ -1,3 +1,7 @@
+from __future__ import print_function
+
+import dispatch
+
 class Node(object):
     def __str__(self):
         return '<%s>' % self.type
@@ -174,13 +178,53 @@ class ArgumentsNode(Node):
         else:
             return [self.left, self.right]
 
-def walk_tree(program_root):
-    if type(program_root) is not ProgramNode:
-        print('walk_tree() was not passed a ProgramNode')
-        return
+class TreeVisitor(object):
+    output = False
+    codegen = False
 
-    print(program_root)
-    for funcs in program_root:
-        print('  %s' % funcs)
-        for stmt in funcs:
-            print('    %s' % stmt)
+    def __init__(self, action):
+        if action == 'output':
+            self.output = True
+        elif action == 'codegen':
+            self.codegen = True
+
+    @dispatch.on('node')
+    def visit(self, node):
+        """Generic visitor; do nothing"""
+        pass
+
+    @visit.when(Node)
+    def visit(self, node):
+        map(self.visit, node._children)
+
+    @visit.when(FunctionNode)
+    def visit(self, node):
+        self.visit(node._children)
+
+    @visit.when(StatementNode)
+    def visit(self, node):
+        for s in node:
+            self.visit(s)
+
+    @visit.when(FunctionCallNode)
+    def visit(self, node):
+        for s in node:
+            self.visit(s)
+        if self.codegen:
+            node.generate()
+
+    @visit.when(ArgumentsNode)
+    def visit(self, node):
+        for s in node:
+            self.visit(s)
+
+    @visit.when(BinOpNode)
+    def visit(self, node):
+        map(self.visit, node._children)
+        if self.codegen:
+            node.generate()
+
+    @visit.when(ConstantNode)
+    def visit(self, node):
+        if self.codegen:
+            node.generate()
