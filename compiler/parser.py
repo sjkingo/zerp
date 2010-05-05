@@ -5,7 +5,7 @@ import ply.yacc as yacc
 from lexer import tokens
 from tree import *
 
-debug = False
+debug = True
 
 def uniqify(l):
     n = []
@@ -89,8 +89,17 @@ def p_exp_func_call(p):
     'Expression : FunctionCall'
     p[0] = p[1]
 
+def p_func_arguments(p):
+    '''Arguments : Expression
+                 | Expression COMMA Expression'''
+    if len(p) == 2:
+        p[0] = ArgumentsNode(p[1])
+    else:
+        p[0] = ArgumentsNode(p[1], p[3])
+    print_node('Arguments', p)
+
 def p_func_call(p):
-    'FunctionCall : IDENTIFIER LPAREN Expression RPAREN'
+    'FunctionCall : IDENTIFIER LPAREN Arguments RPAREN'
     p[0] = FunctionCallNode(p[1], p[3])
     print_node('FunctionCall', p)
 

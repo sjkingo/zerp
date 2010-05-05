@@ -137,6 +137,26 @@ class FunctionCallNode(StatementNode):
     def _children(self):
         return [self.args_exp]
 
+class ArgumentsNode(Node):
+    def __init__(self, left, right=None):
+        self.type = 'arguments'
+        self.left = left
+        self.right = right
+
+    def __str__(self):
+        if self.right is None:
+            args = self.left
+        else:
+            args = '%s, %s' % (self.left, self.right)
+        return '<%s %s>' % (self.type, args)
+
+    @property
+    def _children(self):
+        if self.right is None:
+            return [self.left]
+        else:
+            return [self.left, self.right]
+
 def walk_tree(program_root):
     if type(program_root) is not ProgramNode:
         print('walk_tree() was not passed a ProgramNode')

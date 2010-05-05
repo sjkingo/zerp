@@ -1,0 +1,6 @@
+# compiled by blah @ bloh
+store 12 %a
+push %a
+pop
+pop
+push %a
