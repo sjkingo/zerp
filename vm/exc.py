@@ -20,3 +20,8 @@ class InvalidRegister(MachineException):
     type = 'Invalid register'
     def __init__(self, reg):
         self.message = 'Invalid register %s' % reg
+
+class UnknownFunction(MachineException):
+    type = 'Unknown function'
+    def __init__(self, func):
+        self.message = 'Unknown function %s' % func

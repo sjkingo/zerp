@@ -4,5 +4,10 @@ store 12 %a
 push %a
 pop
 pop
+
+# print '12'
+push %a
+call print
+
 # return 12
 push %a

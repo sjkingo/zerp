@@ -1,5 +1,7 @@
 from __future__ import print_function
+import inspect
 
+import builtins
 from exc import *
 
 class Machine(object):
@@ -9,6 +11,7 @@ class Machine(object):
         'b': 0,
     }
     line = 0
+    builtins = builtins.funcs
 
     def __init__(self, verbose):
         self.verbose = verbose
@@ -23,7 +26,7 @@ class Machine(object):
             for i, (opcode, args) in enumerate(ins):
                 self.line = i
                 try:
-                    func = getattr(self, opcode)
+                    func = getattr(self, 'i_%s' % opcode)
                 except AttributeError:
                     raise InvalidOpcode(opcode)
                 try:
@@ -51,10 +54,10 @@ class Machine(object):
             return 100
 
     def print_stack(self):
-        print('-- stack --')
+        self.debug('-- stack --')
         for f in reversed(self.stack):
-            print(f)
-        print('--')
+            self.debug(f)
+        self.debug('--')
 
     def halt(self):
         print('Machine halted')
@@ -72,17 +75,50 @@ class Machine(object):
         self.regs[reg[1:]] = val
         self.debug('%s <- %s' % (reg, val))
 
-    def push(self, x):
+    # Machine instructions
+
+    def i_push(self, x):
         val = self.get_reg(str(x))
         self.stack.append(val)
         self.print_stack()
 
-    def pop(self):
+    def i_pop(self):
         try:
             self.stack.pop()
         except IndexError:
             raise StackUnderflow()
         self.print_stack()
 
-    def store(self, val, reg):
+    def i_store(self, val, reg):
         self.store_reg(str(reg), val)
+
+    def i_call(self, func_name):
+        if func_name not in self.builtins:
+            raise UnknownFunction(func_name)
+
+        func = getattr(builtins, self.builtins[func_name])
+
+        # get the number of arguments this function takes. We use this to
+        # pop only the correct amount of arguments off the stack. Note - 1 to
+        # remove the machine object we will be passing.
+        n = len(inspect.getargspec(func).args) - 1
+
+        # construct an arguments list
+        args = []
+        for i in xrange(n):
+            try:
+                x = self.stack.pop()
+            except IndexError:
+                raise StackUnderflow()
+            else:
+                args.append(str(x))
+
+        self.debug('Calling %s(%s)' % (func_name, args))
+
+        # call the function and capture its return. Note that this isn't a 
+        # bound method so pass the machine instance.
+        ret = func(self, *args)
+
+        # Push the return back on the stack and we're done
+        self.stack.append(str(ret))
+        self.print_stack()
