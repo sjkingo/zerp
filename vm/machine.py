@@ -4,8 +4,26 @@ import inspect
 import builtins
 from exc import *
 
+class Stack(object):
+    s = []
+
+    def push(self, x):
+        self.s.append(str(x))
+
+    def pop(self):
+        try:
+            return self.s.pop()
+        except IndexError:
+            raise StackUnderflow()
+
+    def print(self):
+        print('+------')
+        for i, f in enumerate(reversed(self.s)):
+            print('| %s' % f)
+        print('+------')
+
 class Machine(object):
-    stack = []
+    stack = Stack()
     regs = {
         'a': 0,
         'b': 0,
@@ -17,7 +35,7 @@ class Machine(object):
 
     def __init__(self, verbose):
         self.verbose = verbose
-        self.stack.append(0) # return value
+        self.stack.push(0) # return value
 
     def debug(self, msg):
         if self.verbose:
@@ -45,21 +63,12 @@ class Machine(object):
             # the return. (we pushed 0 at the start so provided the uesr did
             # not pop it off, we default to 0
             self.line += 1
-            try:
-                return int(self.stack.pop())
-            except IndexError:
-                raise StackUnderflow()
+            return int(self.stack.pop())
 
         except MachineException, e:
             print('%s: line %d: %s' % (e.type, self.line, e.message))
             self.halt()
             return 100
-
-    def print_stack(self):
-        self.debug('-- stack --')
-        for f in reversed(self.stack):
-            self.debug(f)
-        self.debug('--')
 
     def halt(self):
         print('Machine halted')
@@ -85,19 +94,16 @@ class Machine(object):
         Push the value in the named register on to the stack."""
 
         val = self.get_reg(str(x))
-        self.stack.append(val)
-        self.print_stack()
+        self.stack.push(val)
+        self.stack.print()
 
     def i_pop(self):
         """POP
 
         Pop the value off the stop of the stack."""
 
-        try:
-            v = self.stack.pop()
-        except IndexError:
-            raise StackUnderflow()
-        self.print_stack()
+        v = self.stack.pop()
+        self.stack.print()
         return v
 
     def i_store(self, val, reg):
@@ -126,12 +132,8 @@ class Machine(object):
         # construct an arguments list
         args = []
         for i in xrange(n):
-            try:
-                x = self.stack.pop()
-            except IndexError:
-                raise StackUnderflow()
-            else:
-                args.append(str(x))
+            x = self.stack.pop()
+            args.append(x)
 
         self.debug('Calling %s(%s)' % (func_name, ', '.join(args)))
 
@@ -140,8 +142,8 @@ class Machine(object):
         ret = func(self, *args)
 
         # Push the return back on the stack and we're done
-        self.stack.append(str(ret))
-        self.print_stack()
+        self.stack.push(ret)
+        self.stack.print()
 
     def i_add(self):
         """ADD
@@ -149,10 +151,10 @@ class Machine(object):
         Adds the value on the top of the stack to the value on the second
         top of stack (popping both in the process) and pushes on the result."""
 
-        v1 = int(self.i_pop())
-        v2 = int(self.i_pop())
-        self.stack.append(v1 + v2)
-        self.print_stack()
+        v1 = int(self.stack.pop())
+        v2 = int(self.stack.pop())
+        self.stack.push(v1 + v2)
+        self.stack.print()
 
     def i_sub(self):
         """SUB
@@ -160,10 +162,10 @@ class Machine(object):
         Subtract the top of the stack from the second top of stack (popping
         both values off in the process) and pushes the result on."""
 
-        v1 = int(self.i_pop())
-        v2 = int(self.i_pop())
-        self.stack.append(v1 - v2)
-        self.print_stack()
+        v1 = int(self.stack.pop())
+        v2 = int(self.stack.pop())
+        self.stack.push(v1 - v2)
+        self.stack.print()
 
     def i_equ(self):
         """EQU
@@ -171,11 +173,10 @@ class Machine(object):
         Compare the top of stack with the second top of stack (popping both
         off in the process) and pushes 1 if they are equal, or 0 otherwise."""
 
-        v1 = int(self.i_pop())
-        v2 = int(self.i_pop())
-
+        v1 = int(self.stack.pop())
+        v2 = int(self.stack.pop())
         if v1 == v2:
-            self.stack.append(1)
+            self.stack.push(1)
         else:
-            self.stack.append(0)
-        self.print_stack()
+            self.stack.push(0)
+        self.stack.print()
