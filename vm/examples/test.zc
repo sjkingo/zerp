@@ -1,3 +1,4 @@
+#!/home/sam/Code/zerp/vm/main.py
 # compiled by blah @ bloh
 store 12 %a
 push %a
