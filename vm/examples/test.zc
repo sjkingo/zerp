@@ -14,5 +14,20 @@ push %b
 add
 call print
 
+# do some subtraction and print the result (should be -7)
+push %a
+push %b
+sub
+call print
+
+# do some more subtraction but now compare the result and print (1)
+push %b
+push %a
+sub
+store 7 %c
+push %c
+equ
+call print
+
 # return 12
 push %a

@@ -9,6 +9,8 @@ class Machine(object):
     regs = {
         'a': 0,
         'b': 0,
+        'c': 0,
+        'd': 0,
     }
     line = 0
     builtins = builtins.funcs
@@ -78,11 +80,19 @@ class Machine(object):
     # Machine instructions
 
     def i_push(self, x):
+        """PUSH reg
+
+        Push the value in the named register on to the stack."""
+
         val = self.get_reg(str(x))
         self.stack.append(val)
         self.print_stack()
 
     def i_pop(self):
+        """POP
+
+        Pop the value off the stop of the stack."""
+
         try:
             v = self.stack.pop()
         except IndexError:
@@ -91,9 +101,18 @@ class Machine(object):
         return v
 
     def i_store(self, val, reg):
+        """STORE constant dest
+
+        Store the immediate value 'constant' in the given register."""
+
         self.store_reg(str(reg), val)
 
     def i_call(self, func_name):
+        """CALL name
+        
+        Call the function given by name. The arguments should be pushed on to 
+        the stack in reverse order first."""
+
         if func_name not in self.builtins:
             raise UnknownFunction(func_name)
 
@@ -125,10 +144,38 @@ class Machine(object):
         self.print_stack()
 
     def i_add(self):
-        """Adds the value on the top of the stack to the value on the second
-        top of stack (popping both in the process) and pushes on the result.
-        """
+        """ADD
+        
+        Adds the value on the top of the stack to the value on the second
+        top of stack (popping both in the process) and pushes on the result."""
+
         v1 = int(self.i_pop())
         v2 = int(self.i_pop())
         self.stack.append(v1 + v2)
+        self.print_stack()
+
+    def i_sub(self):
+        """SUB
+
+        Subtract the top of the stack from the second top of stack (popping
+        both values off in the process) and pushes the result on."""
+
+        v1 = int(self.i_pop())
+        v2 = int(self.i_pop())
+        self.stack.append(v1 - v2)
+        self.print_stack()
+
+    def i_equ(self):
+        """EQU
+
+        Compare the top of stack with the second top of stack (popping both
+        off in the process) and pushes 1 if they are equal, or 0 otherwise."""
+
+        v1 = int(self.i_pop())
+        v2 = int(self.i_pop())
+
+        if v1 == v2:
+            self.stack.append(1)
+        else:
+            self.stack.append(0)
         self.print_stack()
