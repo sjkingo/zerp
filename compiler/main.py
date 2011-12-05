@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.6
+#!/usr/bin/python
 
 from __future__ import print_function
 from optparse import OptionParser, OptionGroup
