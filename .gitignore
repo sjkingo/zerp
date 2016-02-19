@@ -1,5 +1,5 @@
 *.pyc
 __pycache__/
 z.out
-compiler/parser.out
-compiler/parsetab.py
+parser.out
+parsetab.py
