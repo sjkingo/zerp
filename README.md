@@ -4,7 +4,7 @@ zerp is a compiler for Z, a toy programming language similar in syntax to
 Python and Pascal. It targets a virtual machine written in Python that supports
 a limited instruction set.
 
-For more information on Z, see the [language reference](blob/master/Z.md).
+For more information on Z, see the [language reference](Z.md).
 
 ## Design
 
