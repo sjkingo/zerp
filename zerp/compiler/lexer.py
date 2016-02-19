@@ -5,6 +5,7 @@ reserved = {
     'end': 'KW_END',
     'var': 'KW_VAR',
     'integer': 'KW_INTEGER',
+    'string': 'KW_STRING',
 }
 
 tokens = [
@@ -17,6 +18,7 @@ tokens = [
     'RPAREN',
     'COLON',
     'SEMICOLON',
+    'SCONST',
 ] + list(reserved.values())
 
 class ZLexer(object):
@@ -39,6 +41,7 @@ class ZLexer(object):
     t_RPAREN = r'\)'
     t_COLON = r':'
     t_SEMICOLON = r';'
+    t_SCONST = r'\"([^\\\n]|(\\.))*?\"'
 
     def col(self, t):
         """Compute column number in input stream"""

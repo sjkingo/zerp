@@ -39,7 +39,9 @@ def p_var_decl(p):
     print_node('VarDecl', p)
 
 def p_ztype(p):
-    '''ZType : KW_INTEGER'''
+    '''ZType : KW_INTEGER
+             | KW_STRING
+    '''
     p[0] = p[1]
 
 def p_assignment(p):
@@ -81,6 +83,11 @@ def p_exp_constant(p):
     'Expression : NUMBER'
     p[0] = ConstantNode(p[1])
     print_node('Constant', p)
+
+def p_exp_sconst(p):
+    'Expression : SCONST'
+    p[0] = ConstantStringNode(p[1])
+    print_node('ConstantString', p)
 
 def p_exp_var(p):
     'Expression : IDENTIFIER'

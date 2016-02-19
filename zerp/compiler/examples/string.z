@@ -1,0 +1,6 @@
+# This example shows how strings are used
+
+begin main()
+    var name : string;
+    name := "foo";
+end

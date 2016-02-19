@@ -137,6 +137,22 @@ class ConstantNode(ExpNode):
         print('store %d %%a' % self.value)
         print('push %a')
 
+class ConstantStringNode(ExpNode):
+    def __init__(self, val):
+        self.type = 'constant_string'
+        self.value = str(val)
+
+    def __str__(self):
+        return '<%s "%s">' % (self.type, self.value)
+
+    @property
+    def _children(self):
+        return []
+
+    def generate(self):
+        # use GP register %a
+        pass
+
 class BinOpNode(ExpNode):
     ops = {
         '+': 'add',
