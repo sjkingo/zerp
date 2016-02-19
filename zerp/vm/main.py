@@ -1,35 +1,28 @@
 #!/usr/bin/env python
 
-from optparse import OptionParser
+import argparse
 import sys
 
 from exc import *
 import machine
 
 def parse_args():
-    parser = OptionParser(usage='usage: %prog [options] [filename]')
-    parser.add_option('-v', '--verbose', dest='verbose', action='store_true',
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-v', '--verbose', dest='verbose', action='store_true',
             default=False, help='Be verbose in parsing and executing code')
-    options, args = parser.parse_args()
+    parser.add_argument('input_filename', help='filename of compiled code to execute (give - for stdin).')
+    args = parser.parse_args()
 
-    filename = None
-    if len(args) == 0:
-        filename = '<stdin>'
-    elif len(args) == 1:
-        filename = args[0]
+    if args.input_filename == '-':
+        fp = sys.stdin
     else:
-        parser.error('incorrect number of parameters')
+        fp = open(args.input_filename, 'r')
 
-    return (options, filename)
+    return (args, fp)
 
-def parse_program(filename):
-    if filename == '<stdin>':
-        lines = sys.stdin.readlines()
-    else:
-        with open(filename, 'r') as fp:
-            lines = fp.readlines()
+def parse_program(input_fp):
     parsed = []
-    for l in lines:
+    for l in input_fp.readlines():
         l = l.strip()
         if len(l) == 0 or l[0] == '#':
             continue
@@ -39,8 +32,8 @@ def parse_program(filename):
 
 
 if __name__ == '__main__':
-    opts, filename = parse_args()
-    p = parse_program(filename)
-    m = machine.Machine(opts.verbose)
+    args, input_fp = parse_args()
+    p = parse_program(input_fp)
+    m = machine.Machine(args.verbose)
     ret = m.execute(p)
     exit(ret)

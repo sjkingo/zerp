@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from optparse import OptionParser, OptionGroup
+import argparse
 import sys
 
 import codegen
@@ -9,36 +9,31 @@ import parser
 import tree
 
 def parse_args():
-    parser = OptionParser(usage='usage: %prog [options] input-filename',
+    parser = argparse.ArgumentParser(
             description='The zerp compiler compiles a source file written in '
             'the Z programming language into an executable program that can '
             'run on the zerp stack machine.')
 
     # basic options
-    parser.add_option('-o', dest='out', metavar='FILE', default='z.out',
-            help='write executable output to FILE (defaults to %default)')
-    parser.add_option('-v', dest='verbose', action='store_true',
+    parser.add_argument('-o', dest='out', metavar='FILE', default='z.out',
+            help='write executable output to FILE (defaults to %(default)s)')
+    parser.add_argument('-v', dest='verbose', action='store_true',
             default=False, help='be verbose during all stages of compiling')
+    parser.add_argument('input_filename', help='filename of Z program to compile')
 
     # stop after x phase
-    stop_group = OptionGroup(parser, 'Stop after phase', 'These options can '
+    stop_group = parser.add_argument_group('Stop after phase', 'These options can '
             'be used to stop the compiler after it finishes a particular '
             'phase.')
-    stop_group.add_option('-p', dest='stop_parser', action='store_true',
+    stop_group.add_argument('-p', dest='stop_parser', action='store_true',
             default=False, help='stop after parsing and output an abstract '
             'syntax tree (this implies -v)')
-    parser.add_option_group(stop_group)
 
-    # parse the arguments
-    opts, args = parser.parse_args()
-    if len(args) != 1:
-        parser.error('incorrect number of parameters')
+    args = parser.parse_args()
+    if args.stop_parser:
+        args.verbose = True
 
-    # fix up implied options
-    if opts.stop_parser:
-        opts.verbose = True
-
-    return (opts, args[0])
+    return args
 
 def run_lexer(file, verbose):
     """Runs the lexer over contents of file and returns the instance for
@@ -61,16 +56,16 @@ def run_generator(dest_filename, tree):
 
 
 if __name__ == '__main__':
-    opts, filename = parse_args()
+    args = parse_args()
 
-    l = run_lexer(filename, verbose=opts.verbose)
-    p = run_parser(l, verbose=opts.verbose)
-    if opts.verbose:
+    l = run_lexer(args.input_filename, verbose=args.verbose)
+    p = run_parser(l, verbose=args.verbose)
+    if args.verbose:
         v = tree.TreeVisitor('output')
-        print('-- AST --')
+        print('\n\n-- Start of AST --')
         v.visit(p) # print out the AST
-        print('--')
-    if opts.stop_parser:
+        print('-- End of AST --')
+    if args.stop_parser:
         exit(0)
 
-    run_generator(opts.out, p)
+    run_generator(args.out, p)
