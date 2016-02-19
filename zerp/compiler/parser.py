@@ -1,9 +1,20 @@
-import ply.yacc as yacc
+from ply.yacc import yacc
+import sys
 
 from lexer import tokens
 from tree import *
 
+__all__ = ['run_parser']
+
+# yacc requires these to be global... maybe (TODO)
 debug = False
+parser = None
+
+def run_parser(lexer, verbose):
+    global debug, parser
+    debug = verbose
+    parser = yacc(debug=verbose)
+    return parser.parse(lexer=lexer)
 
 def uniqify(l):
     n = []
@@ -114,12 +125,5 @@ def p_func_call(p):
 
 def p_error(p):
     if p is not None:
-        print('Syntax error at token %s' % p.type)
-        yacc.errok()
-
-class ZParser(object):
-    def run(self, lexer, verbose):
-        global debug
-        debug = verbose
-        self.parser = yacc.yacc(debug=verbose)
-        return self.parser.parse(lexer=lexer)
+        print('Line %d: Syntax error at token' % p.lineno, p.type, p.value)
+        parser.errok()

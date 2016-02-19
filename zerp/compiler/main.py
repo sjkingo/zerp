@@ -5,7 +5,7 @@ import sys
 
 import codegen
 import lexer
-import parser
+from parser import run_parser
 import tree
 
 def parse_args():
@@ -46,10 +46,6 @@ def run_lexer(file, verbose):
         print('%d error(s) found while lexing' % len(errors), file=sys.stderr)
     return lex
 
-def run_parser(lex, verbose):
-    p = parser.ZParser()
-    return p.run(lex, verbose)
-
 def run_generator(dest_filename, tree):
     c = codegen.CodeGenerator()
     c.generate(dest_filename, tree)
@@ -60,6 +56,9 @@ if __name__ == '__main__':
 
     l = run_lexer(args.input_filename, verbose=args.verbose)
     p = run_parser(l, verbose=args.verbose)
+    if p is None:
+        exit(1)
+
     if args.verbose:
         v = tree.TreeVisitor('output')
         print('\n\n-- Start of AST --')

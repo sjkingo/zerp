@@ -1,4 +1,5 @@
 import ply.lex as lex
+import sys
 
 reserved = {
     'begin': 'KW_BEGIN',
@@ -64,7 +65,7 @@ class ZLexer(object):
     def t_error(self, t):
         self.errors.append((t.lexer.lineno, self.col(t)))
         print('%s:%d:%d: Illegal character \'%s\'' % 
-                (self.filename, t.lexer.lineno, self.col(t), t.value[0]))
+                (self.filename, t.lexer.lineno, self.col(t), t.value[0]), file=sys.stderr)
         t.lexer.skip(1)
 
     def t_newline(self, t):
