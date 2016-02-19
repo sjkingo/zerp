@@ -1,10 +1,10 @@
 from setuptools import find_packages, setup
 
-version = '0.2.0'
+from zerp import __version__
 
 setup(
     name='zerp',
-    version=version,
+    version=__version__,
     license='BSD',
     author='Sam Kingston',
     author_email='sam@sjkwi.com.au',
