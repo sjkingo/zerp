@@ -90,8 +90,8 @@ def p_exp_binop(p):
     p[0] = BinOpNode(p[1], p[2], p[3])
     print_node('Expression', p)
 
-def p_exp_constant(p):
-    'Expression : NUMBER'
+def p_exp_iconst(p):
+    'Expression : ICONST'
     p[0] = ConstantNode(p[1])
     print_node('Constant', p)
 

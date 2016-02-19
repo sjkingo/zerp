@@ -13,7 +13,7 @@ reserved = {
 # All valid tokens
 tokens = list(reserved.values()) + [
     # Literals (integer constant, string constant)
-    'IDENTIFIER', 'NUMBER', 'SCONST',
+    'IDENTIFIER', 'ICONST', 'SCONST',
 
     # Delimeters , ( ) : ;
     'COMMA', 'LPAREN', 'RPAREN', 'COLON', 'SEMICOLON',
@@ -38,6 +38,18 @@ class ZLexer(object):
     t_ignore_COMMENT = r'\#.*'
 
     # Literals
+
+    def t_IDENTIFIER(self, t):
+        r'[a-zA-Z_][a-zA-Z_0-9]*'
+        # try and see if this token is a reserved keyword
+        t.type = self.reserved.get(t.value, 'IDENTIFIER')
+        return t
+
+    def t_ICONST(self, t):
+        r'\d+'
+        t.value = int(t.value)
+        return t
+
     t_SCONST = r'\"([^\\\n]|(\\.))*?\"'
 
     # Delimeters
@@ -64,17 +76,6 @@ class ZLexer(object):
         print('%s:%d:%d: Illegal character \'%s\'' % 
                 (self.filename, t.lexer.lineno, self.col(t), t.value[0]), file=sys.stderr)
         t.lexer.skip(1)
-
-    def t_NUMBER(self, t):
-        r'\d+'
-        t.value = int(t.value)
-        return t
-
-    def t_IDENTIFIER(self, t):
-        r'[a-zA-Z_][a-zA-Z_0-9]*'
-        # try and see if this token is a reserved keyword
-        t.type = self.reserved.get(t.value, 'IDENTIFIER')
-        return t
 
     # Helper methods from here
 
