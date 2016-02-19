@@ -1,6 +1,7 @@
 import ply.lex as lex
 import sys
 
+# Reserved keywords
 reserved = {
     'begin': 'KW_BEGIN',
     'end': 'KW_END',
@@ -9,18 +10,20 @@ reserved = {
     'string': 'KW_STRING',
 }
 
-tokens = [
-    'NUMBER',
+# All valid tokens
+tokens = list(reserved.values()) + [
+    # Literals (integer constant, string constant)
+    'IDENTIFIER', 'NUMBER', 'SCONST',
+
+    # Delimeters , ( ) : ;
+    'COMMA', 'LPAREN', 'RPAREN', 'COLON', 'SEMICOLON',
+
+    # Operators +
     'PLUS',
-    'IDENTIFIER', # can handle reserved keywords
+
+    # Assignment =
     'ASSIGN',
-    'COMMA',
-    'LPAREN',
-    'RPAREN',
-    'COLON',
-    'SEMICOLON',
-    'SCONST',
-] + list(reserved.values())
+]
 
 class ZLexer(object):
     reserved = reserved
@@ -34,43 +37,33 @@ class ZLexer(object):
     # ignore from # to the end of a line
     t_ignore_COMMENT = r'\#.*'
 
-    # tokens that do not require further processing
-    t_PLUS = r'\+'
-    t_ASSIGN = r':='
+    # Literals
+    t_SCONST = r'\"([^\\\n]|(\\.))*?\"'
+
+    # Delimeters
     t_COMMA = r','
     t_LPAREN = r'\('
     t_RPAREN = r'\)'
     t_COLON = r':'
     t_SEMICOLON = r';'
-    t_SCONST = r'\"([^\\\n]|(\\.))*?\"'
 
-    def col(self, t):
-        """Compute column number in input stream"""
-        last = self.input.rfind('\n', 0, t.lexpos)
-        if last < 0:
-            last = 0
-        return t.lexpos - last + 1
+    # Operators
+    t_PLUS = r'\+'
 
-    def build(self, **kwargs):
-        # why this isn't __init__ I have no idea
-        self.lexer = lex.lex(module=self, **kwargs)
+    # Assignment
+    t_ASSIGN = r':='
 
-    def run(self, input, filename=None):
-        """Take an input stream and return its tokens"""
-        self.input = input
-        self.filename = filename
-        self.lexer.input(input)
-        return (self.lexer, self.errors)
+    # Handle newline and keep track of line number
+    def t_newline(self, t):
+        r'\n+'
+        t.lexer.lineno += len(t.value)
 
+    # Some basic error handling of invalid characters
     def t_error(self, t):
         self.errors.append((t.lexer.lineno, self.col(t)))
         print('%s:%d:%d: Illegal character \'%s\'' % 
                 (self.filename, t.lexer.lineno, self.col(t), t.value[0]), file=sys.stderr)
         t.lexer.skip(1)
-
-    def t_newline(self, t):
-        r'\n+'
-        t.lexer.lineno += len(t.value)
 
     def t_NUMBER(self, t):
         r'\d+'
@@ -82,3 +75,23 @@ class ZLexer(object):
         # try and see if this token is a reserved keyword
         t.type = self.reserved.get(t.value, 'IDENTIFIER')
         return t
+
+    # Helper methods from here
+
+    def build(self, **kwargs):
+        self.lexer = lex.lex(module=self, **kwargs)
+
+    def run(self, input, filename=None):
+        self.input = input
+        self.filename = filename
+        self.lexer.input(input)
+        return (self.lexer, self.errors)
+
+    def col(self, t):
+        """
+        Compute column number in input stream for a given token.
+        """
+        last = self.input.rfind('\n', 0, t.lexpos)
+        if last < 0:
+            last = 0
+        return t.lexpos - last + 1
