@@ -9,7 +9,7 @@ setup(
     author='Sam Kingston',
     author_email='sam@sjkwi.com.au',
     description='zerp is a compiler for Z, a toy programming language similar in syntax to Python and Pascal. It targets a virtual machine written in Python that supports a limited instruction set.',
-    url='https://github.com/sjkingo-archive/zerp',
+    url='https://github.com/sjkingo/zerp',
     install_requires=[
         'multipledispatch',
         'ply',
