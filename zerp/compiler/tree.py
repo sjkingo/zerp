@@ -206,13 +206,6 @@ class TreeVisitor(object):
         elif action == 'codegen':
             self.codegen = True
 
-    @property
-    def a(self):
-        if self.output:
-            return 'O'
-        if self.codegen:
-            return 'C'
-
     @dispatch(Node)
     def visit(self, node):
         for c in node._children:
