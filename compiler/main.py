@@ -1,7 +1,7 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
-from __future__ import print_function
 from optparse import OptionParser, OptionGroup
+import sys
 
 import codegen
 import lexer

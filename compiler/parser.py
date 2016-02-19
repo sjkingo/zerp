@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 import ply.yacc as yacc
 
 from lexer import tokens

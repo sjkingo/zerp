@@ -1,6 +1,4 @@
-from __future__ import print_function
-
-import dispatch
+from multipledispatch import dispatch
 
 from symtab import SymbolTable
 import ztypes
@@ -208,54 +206,57 @@ class TreeVisitor(object):
         elif action == 'codegen':
             self.codegen = True
 
-    @dispatch.on('node')
-    def visit(self, node):
-        """Generic visitor; do nothing"""
-        pass
+    @property
+    def a(self):
+        if self.output:
+            return 'O'
+        if self.codegen:
+            return 'C'
 
-    @visit.when(Node)
+    @dispatch(Node)
     def visit(self, node):
-        map(self.visit, node._children)
+        for c in node._children:
+            self.visit(c)
 
-    @visit.when(ProgramNode)
+    @dispatch(ProgramNode)
     def visit(self, node):
         if self.output:
             print(node)
         for s in node:
             self.visit(s)
 
-    @visit.when(FunctionNode)
+    @dispatch(FunctionNode)
     def visit(self, node):
         if self.output:
             print('  %s' % node)
         self.visit(node._children)
 
-    @visit.when(StatementNode)
+    @dispatch(StatementNode)
     def visit(self, node):
         for s in node:
             if self.output:
                 print('    %s' % s)
             self.visit(s)
 
-    @visit.when(FunctionCallNode)
+    @dispatch(FunctionCallNode)
     def visit(self, node):
         for s in node:
             self.visit(s)
         if self.codegen:
             node.generate()
 
-    @visit.when(ArgumentsNode)
+    @dispatch(ArgumentsNode)
     def visit(self, node):
         for s in node:
             self.visit(s)
 
-    @visit.when(BinOpNode)
+    @dispatch(BinOpNode)
     def visit(self, node):
         map(self.visit, node._children)
         if self.codegen:
             node.generate()
 
-    @visit.when(ConstantNode)
+    @dispatch(ConstantNode)
     def visit(self, node):
         if self.codegen:
             node.generate()

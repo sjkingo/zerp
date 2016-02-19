@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 from machine import Machine
 
 def get_ins_docs():
