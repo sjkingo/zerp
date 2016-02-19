@@ -1,8 +1,7 @@
-from __future__ import print_function
 import inspect
 import logging
 
-import builtins
+import builtin_funcs
 from exc import *
 
 # by default debugging is switched on
@@ -35,7 +34,7 @@ class Machine(object):
         'd': 0,
     }
     line = 0
-    builtins = builtins.funcs
+    builtins = builtin_funcs.funcs
 
     def __init__(self, verbose):
         if not verbose:
@@ -54,7 +53,7 @@ class Machine(object):
                     logging.debug('%s %s' % (opcode, ' '.join(args)))
                     func(*args)
                     logging.debug('--')
-                except TypeError, e:
+                except TypeError as e:
                     if '%s() takes' % opcode in str(e):
                         raise OpcodeArgumentsInvalid(opcode)
                     else:
@@ -66,7 +65,7 @@ class Machine(object):
             self.line += 1
             return int(self.stack.pop())
 
-        except MachineException, e:
+        except MachineException as e:
             print('%s: line %d: %s' % (e.type, self.line, e.message))
             self.halt()
             return 100
@@ -119,7 +118,7 @@ class Machine(object):
         if func_name not in self.builtins:
             raise UnknownFunction(func_name)
 
-        func = getattr(builtins, self.builtins[func_name])
+        func = getattr(builtin_funcs, self.builtins[func_name])
 
         # get the number of arguments this function takes. We use this to
         # pop only the correct amount of arguments off the stack. Note - 1 to
@@ -128,7 +127,7 @@ class Machine(object):
 
         # construct an arguments list
         args = []
-        for i in xrange(n):
+        for i in range(n):
             x = self.stack.pop()
             args.append(x)
 
