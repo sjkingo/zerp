@@ -25,11 +25,18 @@ tokens = list(reserved.values()) + [
     'ASSIGN',
 ]
 
+class LexerError(object):
+    def __init__(self, lineno, col, value):
+        self.lineno = lineno
+        self.col = col
+        self.value = value
+
+    def __str__(self):
+        return '{self.lineno}:{self.col} Illegal character {self.value}'.format(self=self)
+
 class ZLexer(object):
     reserved = reserved
     tokens = tokens
-
-    errors = []
 
     # whitespace is only meaningful to seperate tokens
     t_ignore = ' \t'
@@ -70,29 +77,27 @@ class ZLexer(object):
         r'\n+'
         t.lexer.lineno += len(t.value)
 
-    # Some basic error handling of invalid characters
     def t_error(self, t):
-        self.errors.append((t.lexer.lineno, self.col(t)))
-        print('%s:%d:%d: Illegal character \'%s\'' % 
-                (self.filename, t.lexer.lineno, self.col(t), t.value[0]), file=sys.stderr)
-        t.lexer.skip(1)
+        error = LexerError(t.lexer.lineno, self.col(t), t.value[0])
+        print('{filename}:{error}'.format(filename=self.input_filename, 
+                error=str(error)), file=sys.stderr)
+        print('zc: compilation terminated with status 2', file=sys.stderr)
+        exit(2)
 
-    # Helper methods from here
+    def __init__(self, **kwargs):
+        self.lexer = lex.lex(object=self, **kwargs)
 
-    def build(self, **kwargs):
-        self.lexer = lex.lex(module=self, **kwargs)
-
-    def run(self, input, filename=None):
-        self.input = input
-        self.filename = filename
-        self.lexer.input(input)
-        return (self.lexer, self.errors)
+    def run(self, input_filename):
+        self.input_filename = input_filename
+        with open(input_filename, 'r') as input_fp:
+            self.input_code = input_fp.read()
+        self.lexer.input(self.input_code)
 
     def col(self, t):
         """
         Compute column number in input stream for a given token.
         """
-        last = self.input.rfind('\n', 0, t.lexpos)
+        last = self.input_code.rfind('\n', 0, t.lexpos)
         if last < 0:
             last = 0
         return t.lexpos - last + 1

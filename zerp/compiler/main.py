@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import argparse
-import sys
 
 from .codegen import CodeGenerator
 from .lexer import ZLexer
@@ -35,31 +34,19 @@ def parse_args():
 
     return args
 
-def run_lexer(filename, verbose):
-    """
-    Runs the lexer over contents of filename and returns the instance for
-    parsing.
-    """
-
-    l = ZLexer()
-    l.build(debug=verbose)
-
-    with open(filename, 'r') as fp:
-        lex, errors = l.run(fp.read(), filename=filename)
-        if len(errors) != 0:
-            print('%d error(s) found while lexing' % len(errors), file=sys.stderr)
-
-    return lex
-
 def main():
     args = parse_args()
 
-    lex = run_lexer(args.input_filename, verbose=args.verbose)
+    # Perform lexing
+    zlex = ZLexer()
+    zlex.run(args.input_filename)
 
-    program_node = run_parser(lex, verbose=args.verbose)
+    # Parse the input
+    program_node = run_parser(zlex.lexer, verbose=args.verbose)
     if program_node is None:
         exit(1)
 
+    # Generate AST and print if verbose
     tree = AST(program_node)
     if args.verbose:
         tree.dump()
