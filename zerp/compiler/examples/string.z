@@ -2,5 +2,8 @@
 
 begin main()
     var name : string;
+    var name2 : string;
     name := "foo";
+    name2 := "bar";
+    print(name2 + name);
 end
