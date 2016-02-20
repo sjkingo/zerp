@@ -77,6 +77,7 @@ class ZLexer(object):
         r'\n+'
         t.lexer.lineno += len(t.value)
 
+    # Called when a lexer error is detected (typically an invalid token).
     def t_error(self, t):
         error = LexerError(t.lexer.lineno, self.col(t), t.value[0])
         print('{filename}:{error}'.format(filename=self.input_filename, 
@@ -88,6 +89,10 @@ class ZLexer(object):
         self.lexer = lex.lex(object=self, **kwargs)
 
     def run(self, input_filename):
+        """
+        Run the lexer over the contents of the filename given.
+        """
+
         self.input_filename = input_filename
         with open(input_filename, 'r') as input_fp:
             self.input_code = input_fp.read()
@@ -97,6 +102,7 @@ class ZLexer(object):
         """
         Compute column number in input stream for a given token.
         """
+
         last = self.input_code.rfind('\n', 0, t.lexpos)
         if last < 0:
             last = 0
