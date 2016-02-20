@@ -1,11 +1,18 @@
 import inspect
 import logging
+import pickle
+import re
+import string
 
-import builtin_funcs
-from exc import *
+from .exc import *
 
 # by default debugging is switched on
 logging.basicConfig(level=logging.DEBUG, format='%(levelname)s: %(message)s')
+
+class BuiltinFuncs(object):
+    def print(self, machine, arg1):
+        print(arg1)
+        return 0 # always succeeds
 
 class Stack(object):
     s = []
@@ -27,23 +34,20 @@ class Stack(object):
 
 class Machine(object):
     stack = Stack()
-    regs = {
-        'a': 0,
-        'b': 0,
-        'c': 0,
-        'd': 0,
-    }
+    regs = {k: None for k in list(string.ascii_lowercase)}
     line = 0
-    builtins = builtin_funcs.funcs
 
     def __init__(self, verbose):
         if not verbose:
             logging.disable(logging.DEBUG)
         self.stack.push(0) # return value
 
-    def execute(self, ins):
+    def execute(self, program_fp):
+        program = pickle.load(program_fp)
         try:
-            for i, (opcode, args) in enumerate(ins):
+            for i, inst_line in enumerate(program['code']):
+                opcode = inst_line.split()[0]
+                args = inst_line.split()[1:]
                 self.line = i
                 try:
                     func = getattr(self, 'i_%s' % opcode)
@@ -115,10 +119,10 @@ class Machine(object):
         Call the function given by name. The arguments should be pushed on to 
         the stack in reverse order first."""
 
-        if func_name not in self.builtins:
+        if not hasattr(BuiltinFuncs, func_name):
             raise UnknownFunction(func_name)
 
-        func = getattr(builtin_funcs, self.builtins[func_name])
+        func = getattr(BuiltinFuncs, func_name)
 
         # get the number of arguments this function takes. We use this to
         # pop only the correct amount of arguments off the stack. Note - 1 to

@@ -1,4 +1,6 @@
-from machine import Machine
+#!/usr/bin/env python
+
+from .machine import Machine
 
 def get_ins_docs():
     """Extract the docstring from each instruction method and return a dict

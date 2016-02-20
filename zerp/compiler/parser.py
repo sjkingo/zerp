@@ -1,8 +1,8 @@
 from ply.yacc import yacc
 import sys
 
-from lexer import tokens
-from tree import *
+from .lexer import tokens
+from .tree import *
 
 __all__ = ['run_parser']
 

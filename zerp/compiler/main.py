@@ -3,10 +3,10 @@
 import argparse
 import sys
 
-import codegen
-import lexer
-from parser import run_parser
-import tree
+from .codegen import CodeGenerator
+from .lexer import ZLexer
+from .parser import run_parser
+from .tree import AST
 
 def parse_args():
     parser = argparse.ArgumentParser(
@@ -35,36 +35,41 @@ def parse_args():
 
     return args
 
-def run_lexer(file, verbose):
-    """Runs the lexer over contents of file and returns the instance for
-    parsing."""
-    l = lexer.ZLexer()
+def run_lexer(filename, verbose):
+    """
+    Runs the lexer over contents of filename and returns the instance for
+    parsing.
+    """
+
+    l = ZLexer()
     l.build(debug=verbose)
-    with open(file, 'r') as fp:
-        lex, errors = l.run(fp.read(), filename=file)
-    if len(errors) != 0:
-        print('%d error(s) found while lexing' % len(errors), file=sys.stderr)
+
+    with open(filename, 'r') as fp:
+        lex, errors = l.run(fp.read(), filename=filename)
+        if len(errors) != 0:
+            print('%d error(s) found while lexing' % len(errors), file=sys.stderr)
+
     return lex
 
-def run_generator(dest_filename, tree):
-    c = codegen.CodeGenerator()
-    c.generate(dest_filename, tree)
-
-
-if __name__ == '__main__':
+def main():
     args = parse_args()
 
-    l = run_lexer(args.input_filename, verbose=args.verbose)
-    p = run_parser(l, verbose=args.verbose)
-    if p is None:
+    lex = run_lexer(args.input_filename, verbose=args.verbose)
+
+    program_node = run_parser(lex, verbose=args.verbose)
+    if program_node is None:
         exit(1)
 
+    tree = AST(program_node)
     if args.verbose:
-        v = tree.TreeVisitor(output=True)
-        print('\n\n-- Start of AST --')
-        v.visit(p) # print out the AST
-        print('-- End of AST --')
+        tree.dump()
+
     if args.stop_parser:
         exit(0)
 
-    run_generator(args.out, p)
+    # Run code generation over the AST provided and output to file.
+    CodeGenerator(tree).generate(args.out, verbose=args.verbose)
+
+
+if __name__ == '__main__':
+    main()

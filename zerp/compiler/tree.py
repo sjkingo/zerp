@@ -2,8 +2,8 @@ from multipledispatch import dispatch
 import string
 import sys
 
-from symtab import SymbolTable
-import ztypes
+from .symtab import SymbolTable
+from .ztypes import known_types
 
 symtab = SymbolTable()
 
@@ -26,7 +26,7 @@ class Node(object):
         return iter([])
 
     def generate(self):
-        pass
+        return None
 
 class ProgramNode(Node):
     node_type = 'program'
@@ -88,7 +88,7 @@ class VariableNode(Node):
 
     def __init__(self, ztype_str, identifier):
         self.identifier = identifier
-        self.ztype = ztypes.known_types[ztype_str](identifier)
+        self.ztype = known_types[ztype_str](identifier)
         symtab.add(self)
 
     def __str__(self):
@@ -140,7 +140,7 @@ class ConstantNode(Node):
         return '<%s %s>' % (self.node_type, self.value)
 
     def generate(self):
-        print('store %s %%%s' % (self.value, self.reg))
+        return 'store %s %%%s' % (self.value, self.reg)
 
 class BinOpNode(Node):
     node_type = 'binop'
@@ -162,7 +162,7 @@ class BinOpNode(Node):
         return iter([self.left, self.right])
 
     def generate(self):
-        print(self.op)
+        return self.op
 
 class FunctionCallNode(Node):
     node_type = 'func_call'
@@ -177,7 +177,7 @@ class FunctionCallNode(Node):
     def generate(self):
         # First generate the stack push calls for the arguments
         self.args_node.generate()
-        print('call %s' % self.name)
+        return 'call %s' % self.name
 
 class ArgumentsNode(Node):
     node_type = 'arguments'
@@ -188,15 +188,28 @@ class ArgumentsNode(Node):
     def __str__(self):
         return '<%s %s>' % (self.node_type, str(self.subexp))
 
-class TreeVisitor(object):
-    def __init__(self, output=False, codegen=False):
-        self.output = output
-        self.codegen = codegen
+class AST(object):
+    """
+    This is the AST for the Z program after it is parsed by the compiler.
+    """
 
-    def visit(self, node):
+    def __init__(self, program_node):
+        self.root = program_node
+
+    def visit(self, node=None, callback=None):
+        """
+        Visit the node given and recursively go top-down to its descendants.
+        """
+
+        if node is None:
+            node = self.root
+
         for c in node:
-            if self.output:
-                print(c)
-            self.visit(c)
-            if self.codegen:
-                c.generate()
+            if callback:
+                callback(c)
+            self.visit(c, callback=callback)
+
+    def dump(self):
+        print('\n\n-- Start of AST --')
+        self.visit(callback=print)
+        print('-- End of AST --')

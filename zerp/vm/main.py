@@ -3,8 +3,8 @@
 import argparse
 import sys
 
-from exc import *
-import machine
+from .exc import *
+from .machine import Machine
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -16,24 +16,16 @@ def parse_args():
     if args.input_filename == '-':
         fp = sys.stdin
     else:
-        fp = open(args.input_filename, 'r')
+        fp = open(args.input_filename, 'rb')
 
     return (args, fp)
 
-def parse_program(input_fp):
-    parsed = []
-    for l in input_fp.readlines():
-        l = l.strip()
-        if len(l) == 0 or l[0] == '#':
-            continue
-        split = l.split()
-        parsed.append((split[0], split[1:]))
-    return parsed
+def main():
+    args, input_fp = parse_args()
+    m = Machine(args.verbose)
+    ret = m.execute(input_fp)
+    exit(ret)
 
 
 if __name__ == '__main__':
-    args, input_fp = parse_args()
-    p = parse_program(input_fp)
-    m = machine.Machine(args.verbose)
-    ret = m.execute(p)
-    exit(ret)
+    main()
