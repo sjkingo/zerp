@@ -2,6 +2,10 @@ from contextlib import redirect_stdout
 import datetime
 import os
 
+import sys
+sys.path.insert(0, os.path.realpath(os.path.join('..', '..')))
+from zerp import __version__
+
 from tree import *
 
 class CodeGenerator(object):
@@ -15,7 +19,8 @@ class CodeGenerator(object):
                 vm_path = os.path.normpath(os.path.join(os.path.dirname(__file__), 
                         '..', 'vm', 'main.py'))
                 print('#!%s' % vm_path)
-                print('# compiled at %s' % datetime.datetime.now())
+                print('# compiled at %s by zerp %s' % (datetime.datetime.now(), __version__))
+                print('# using compiler arguments: %s' % ' '.join(sys.argv))
                 self.visitor.visit(tree)
 
         # add execute permissions; +x
