@@ -60,7 +60,7 @@ if __name__ == '__main__':
         exit(1)
 
     if args.verbose:
-        v = tree.TreeVisitor('output')
+        v = tree.TreeVisitor(output=True)
         print('\n\n-- Start of AST --')
         v.visit(p) # print out the AST
         print('-- End of AST --')

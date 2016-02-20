@@ -6,7 +6,7 @@ from tree import *
 
 class CodeGenerator(object):
     def __init__(self):
-        self.visitor = TreeVisitor('codegen')
+        self.visitor = TreeVisitor(codegen=True)
 
     def generate(self, filename, tree):
         with open(filename, 'w') as fp:

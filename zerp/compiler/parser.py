@@ -21,18 +21,10 @@ def uniqify(l):
     [n.append(i) for i in l if not n.count(i) and i is not None]
     return n
 
-def print_node(name, children):
-    if not debug:
-        return
-    print('%s: %s' % (name, list(children)))
-    for c in list(children):
-        print('  %s' % str(c))
-
 # never put anything above here!
 def p_program(p):
     'Program : Function' 
     p[0] = ProgramNode([p[1]])
-    print_node('Program', p)
 
 def p_empty(p):
     'e : '
@@ -41,13 +33,10 @@ def p_empty(p):
 def p_function(p):
     'Function : KW_BEGIN IDENTIFIER LPAREN RPAREN StatementList KW_END'
     p[0] = FunctionNode(p[2], p[5])
-    print_node('Function', p)
 
 def p_var_decl(p):
     'VarDecl : KW_VAR IDENTIFIER COLON ZType SEMICOLON'
-    v = VariableNode(p[4], p[2])
-    p[0] = VariableDeclNode(v)
-    print_node('VarDecl', p)
+    p[0] = VariableNode(p[4], p[2])
 
 def p_ztype(p):
     '''ZType : KW_INTEGER
@@ -58,7 +47,6 @@ def p_ztype(p):
 def p_assignment(p):
     'Assignment : IDENTIFIER ASSIGN Expression SEMICOLON'
     p[0] = AssignmentNode(p[1], p[3])
-    print_node('Assignment', p)
 
 def p_statement_list(p):
     '''StatementList : StatementList Statement
@@ -76,34 +64,26 @@ def p_statement_list(p):
 
     if len(sl) != 0:
         p[0] = StatementListNode(sl)
-    print_node('StatementList', p)
 
 def p_statement_exp(p):
     '''Statement : Expression SEMICOLON
                  | VarDecl
                  | Assignment'''
     p[0] = StatementNode(p[1])
-    print_node('Statement', p)
 
 def p_exp_binop(p):
     'Expression : Expression PLUS Expression'
-    p[0] = BinOpNode(p[1], p[2], p[3])
-    print_node('Expression', p)
+    p[0] = BinOpNode(p[3], p[2], p[1])
 
 def p_exp_iconst(p):
-    'Expression : ICONST'
+    """Expression : ICONST
+                  | SCONST
+    """
     p[0] = ConstantNode(p[1])
-    print_node('Constant', p)
 
-def p_exp_sconst(p):
-    'Expression : SCONST'
-    p[0] = ConstantStringNode(p[1])
-    print_node('ConstantString', p)
-
-def p_exp_var(p):
+def p_reference(p):
     'Expression : IDENTIFIER'
-    p[0] = VariableNode('unknown', p[1])
-    print_node('Variable', p)
+    p[0] = ReferenceNode(p[1])
 
 def p_exp_func_call(p):
     'Expression : FunctionCall'
@@ -116,12 +96,10 @@ def p_func_arguments(p):
         p[0] = ArgumentsNode(p[1])
     else:
         p[0] = ArgumentsNode(p[1], p[3])
-    print_node('Arguments', p)
 
 def p_func_call(p):
     'FunctionCall : IDENTIFIER LPAREN Arguments RPAREN'
     p[0] = FunctionCallNode(p[1], p[3])
-    print_node('FunctionCall', p)
 
 def p_error(p):
     if p is not None:
