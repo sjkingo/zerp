@@ -1,4 +1,4 @@
-import string
+from string import ascii_lowercase
 import sys
 
 from .symtab import SymbolTable
@@ -6,7 +6,7 @@ from .ztypes import known_types
 
 symtab = SymbolTable()
 
-_regs = {k: None for k in list(string.ascii_lowercase)}
+_regs = {k: None for k in list(ascii_lowercase)}
 def put_reg(node, val):
     """
     Puts the given value in the next available reg and returns the key.
