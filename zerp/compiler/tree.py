@@ -99,6 +99,8 @@ class ReferenceNode(Node):
     """
 
     node_type = 'reference'
+    
+    location = None #: index in code 
 
     def __init__(self, identifier):
         self.identifier = identifier
@@ -108,6 +110,10 @@ class ReferenceNode(Node):
 
     def __str__(self):
         return '<%s %s %s>' % (self.node_type, self.identifier, self.vardecl_node)
+
+    def generate(self):
+        assert self.location is not None
+        return 'push .strings[%d]' % self.location
 
 class AssignmentNode(Node):
     node_type = 'assignment'
@@ -173,9 +179,10 @@ class FunctionCallNode(Node):
     def __str__(self):
         return '<%s %s(%s)>' % (self.node_type, self.name, self.args_node)
 
+    def __iter__(self):
+        return iter([self.args_node])
+
     def generate(self):
-        # First generate the stack push calls for the arguments
-        self.args_node.generate()
         return 'call %s' % self.name
 
 class ArgumentsNode(Node):
@@ -186,6 +193,9 @@ class ArgumentsNode(Node):
 
     def __str__(self):
         return '<%s %s>' % (self.node_type, str(self.subexp))
+
+    def __iter__(self):
+        return iter([self.subexp])
 
 class AST(object):
     """
@@ -204,9 +214,9 @@ class AST(object):
             node = self.root
 
         for c in node:
+            self.visit(c, callback=callback)
             if callback:
                 callback(c)
-            self.visit(c, callback=callback)
 
     def dump(self):
         print('\n\n-- Start of AST --')

@@ -10,7 +10,8 @@ from .exc import *
 logging.basicConfig(level=logging.DEBUG, format='%(levelname)s: %(message)s')
 
 class BuiltinFuncs(object):
-    def print(self, machine, arg1):
+    @classmethod
+    def print(cls, machine, arg1):
         print(arg1)
         return 0 # always succeeds
 
@@ -36,6 +37,7 @@ class Machine(object):
     stack = Stack()
     regs = {k: None for k in list(string.ascii_lowercase)}
     line = 0
+    program = None
 
     def __init__(self, verbose):
         if not verbose:
@@ -43,9 +45,9 @@ class Machine(object):
         self.stack.push(0) # return value
 
     def execute(self, program_fp):
-        program = pickle.load(program_fp)
+        self.program = pickle.load(program_fp)
         try:
-            for i, inst_line in enumerate(program['code']):
+            for i, inst_line in enumerate(self.program['code']):
                 opcode = inst_line.split()[0]
                 args = inst_line.split()[1:]
                 self.line = i
@@ -78,9 +80,20 @@ class Machine(object):
         print('Machine halted')
 
     def get_reg(self, reg):
-        if reg[1:] not in self.regs:
-            raise InvalidRegister(reg)
-        val = self.regs[reg[1:]]
+        # First try to match one of the data sections before
+        # checking registers
+
+        sec_match = self._sec_patt.match(reg)
+        if sec_match:
+            # Program section
+            section, index = sec_match.groups()
+            val = self.program[section][int(index)][-1]
+        else:
+            # Register
+            if reg[1:] not in self.regs:
+                raise InvalidRegister(reg)
+            val = self.regs[reg[1:]]
+
         logging.debug('%s -> %s' % (reg, val))
         return val
 
@@ -92,11 +105,15 @@ class Machine(object):
 
     # Machine instructions
 
+    _sec_patt = re.compile(r'^\.([a-z]+)\[(\d+)\]')
     def i_push(self, x):
         """PUSH reg
         Push the value in the named register on to the stack."""
 
         val = self.get_reg(str(x))
+        # Remove double quotes from start and end if present - this
+        # denotes a string
+        val = re.sub(r'^"|"$', '', val)
         self.stack.push(val)
         self.stack.print()
 
@@ -125,9 +142,9 @@ class Machine(object):
         func = getattr(BuiltinFuncs, func_name)
 
         # get the number of arguments this function takes. We use this to
-        # pop only the correct amount of arguments off the stack. Note - 1 to
-        # remove the machine object we will be passing.
-        n = len(inspect.getargspec(func).args) - 1
+        # pop only the correct amount of arguments off the stack. Note - 2 to
+        # remove the `cls` and `machine` arguments.
+        n = len(inspect.getargspec(func).args) - 2
 
         # construct an arguments list
         args = []
@@ -148,10 +165,11 @@ class Machine(object):
     def i_add(self):
         """ADD
         Adds the value on the top of the stack to the value on the second
-        top of stack (popping both in the process) and pushes on the result."""
+        top of stack (popping both in the process) and pushes on the result.
+        This can also be used for string concatenation."""
 
-        v1 = int(self.stack.pop())
-        v2 = int(self.stack.pop())
+        v1 = self.stack.pop()
+        v2 = self.stack.pop()
         self.stack.push(v1 + v2)
         self.stack.print()
 
@@ -160,8 +178,11 @@ class Machine(object):
         Subtract the top of the stack from the second top of stack (popping
         both values off in the process) and pushes the result on."""
 
-        v1 = int(self.stack.pop())
-        v2 = int(self.stack.pop())
+        try:
+            v1 = int(self.stack.pop())
+            v2 = int(self.stack.pop())
+        except ValueError:
+            raise InvalidOpcode('Cannot perform SUB on top two stack values')
         self.stack.push(v1 - v2)
         self.stack.print()
 

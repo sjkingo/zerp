@@ -41,7 +41,23 @@ class CodeGenerator(object):
         if type(node.ztype) == String:
             self._string(node)
 
+    @dispatch(ReferenceNode)
+    def store_node(self, node):
+        if type(node.vardecl_node.ztype) == String:
+            name = node.vardecl_node.identifier
+            index = self._get_string_tuple(name)[0]
+            node.location = index
+        self._code(node)
+
+    @dispatch(ArgumentsNode)
+    def store_node(self, node):
+        self._code(node)
+
     @dispatch(FunctionCallNode)
+    def store_node(self, node):
+        self._code(node)
+
+    @dispatch(BinOpNode)
     def store_node(self, node):
         self._code(node)
 
@@ -52,13 +68,24 @@ class CodeGenerator(object):
         Store the string specified in node.
         """
         index = len(self.sections['strings'])
-        self.sections['strings'].append((index, node.value.value))
+        self.sections['strings'].append((index, node.identifier, node.value.value))
 
     def _code(self, node):
         """
         Generate code for the given node and store it.
         """
-        self.sections['code'].append(node.generate())
+        c = node.generate()
+        if c is None:
+            return
+        if type(c) == str:
+            c = [c]
+        self.sections['code'].extend(c)
+
+    def _get_string_tuple(self, identifier):
+        for index, name, value in self.sections['strings']:
+            if identifier == name:
+                return (index, name, value)
+        return None
 
     # External methods
 
