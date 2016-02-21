@@ -1,4 +1,4 @@
-# Design
+# `zc` and `zvm` internal design
 
 This document details the internal design of the compiler and virtual machine. It is not
 required understanding to use the `zc` and `zvm` programs.
@@ -22,4 +22,4 @@ an assembled format ready to be executed by the virtual machine.
 
 ### Phase 5: code generation
 
-# `zvm`: the virtual machine
+## `zvm`: the virtual machine
