@@ -25,4 +25,17 @@ this assembled format and executes it.
 
 ### `zc`: the compiler
 
+The Z compiler is a multi-pass compiler that takes the high-level Z code and generates
+an assembled format ready to be executed by the virtual machine.
+
+#### Phase 1: lexical analysis
+
+#### Phase 2: parsing and AST generation
+
+#### Phase 3: reference evaluation 
+
+#### Phase 4: semantic analysis
+
+#### Phase 5: code generation
+
 ### `zvm`: the virtual machine
